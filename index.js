@@ -5,6 +5,12 @@ canvas.width = 1024
 canvas.height = 576
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height);
+let velocity = 0
+const keys = {
+    isLeft: false,
+    isRight: false,
+    isSpace: false,
+}
 
 class Player {
     constructor() {
@@ -30,7 +36,7 @@ class Player {
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 }
-let velocity = 0
+
 const player = new Player()
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
@@ -52,6 +58,13 @@ function update_player() {
     } else {
         velocity = 0; 
     }
+
+    if (keys.isLeft) {
+        player.position.x -= 5
+    }
+    if(keys.isRight) {
+        player.position.x += 5
+    }
 }
 
 
@@ -61,20 +74,38 @@ function update_player() {
 document.addEventListener('keydown', (event) => {
     movement(event);
 });
+document.addEventListener('keyup', (event) => {
+    movement(event);
+});
 
 function movement(event) {
     if (event.code == 'Space') {
-        if (player.sides.bottom >= canvas.height) {
-            velocity=-18
+        if (event.type == 'keydown') {
+            if (player.sides.bottom >= canvas.height) {
+                velocity=-18
+            }
+            if (player.sides.bottom >= canvas.height) {
+                player.position.y = canvas.height - player.height
+            }
+        }else{
+            return
         }
-        if (player.sides.bottom >= canvas.height) {
-            player.position.y = canvas.height - player.height
+        
+    }
+
+    if(event.code == 'KeyA' || event.code == 'ArrowLeft') {
+        if (event.type == "keydown") {
+            keys.isLeft = true
+        }else{
+            keys.isLeft = false
         }
-    }else if(event.code == 'KeyA' || event.code == 'ArrowLeft') {
-            player.position.x -= 6
-        
-    }else if(event.code == 'KeyD' || event.code == 'ArrowRight') {
-            player.position.x += 6
-        
+    }
+
+    if(event.code == 'KeyD' || event.code == 'ArrowRight') {
+        if (event.type == "keydown") {
+            keys.isRight = true
+        }else{
+            keys.isRight = false
+        }
     }                                      
 }
