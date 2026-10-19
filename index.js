@@ -38,6 +38,11 @@ class Player {
 }
 
 const player = new Player()
+
+// ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
+
+window.requestAnimationFrame(animate);
+
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = 'white'
@@ -47,27 +52,26 @@ function animate() {
     window.requestAnimationFrame(animate);
 }
 
-window.requestAnimationFrame(animate);
-
-
-
 function update_player() {
     if (!(player.sides.bottom > canvas.height)) {
         player.position.y += velocity;
         velocity += player.weight;
     } else {
-        velocity = 0; 
+        velocity = 0;
+        player.position.y = canvas.height - player.height
     }
-
+    if (keys.isSpace && player.sides.bottom >= canvas.height) {
+        velocity -= 18
+    }
     if (keys.isLeft) {
         player.position.x -= 5
     }
     if(keys.isRight) {
         player.position.x += 5
     }
+    
 }
-
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //Movement
 
@@ -80,32 +84,14 @@ document.addEventListener('keyup', (event) => {
 
 function movement(event) {
     if (event.code == 'Space') {
-        if (event.type == 'keydown') {
-            if (player.sides.bottom >= canvas.height) {
-                velocity=-18
-            }
-            if (player.sides.bottom >= canvas.height) {
-                player.position.y = canvas.height - player.height
-            }
-        }else{
-            return
-        }
-        
+        keys.isSpace = event.type == 'keydown'
     }
 
     if(event.code == 'KeyA' || event.code == 'ArrowLeft') {
-        if (event.type == "keydown") {
-            keys.isLeft = true
-        }else{
-            keys.isLeft = false
-        }
+        keys.isLeft = event.type == 'keydown'
     }
 
     if(event.code == 'KeyD' || event.code == 'ArrowRight') {
-        if (event.type == "keydown") {
-            keys.isRight = true
-        }else{
-            keys.isRight = false
-        }
+        keys.isRight = event.type == 'keydown'
     }                                      
 }
