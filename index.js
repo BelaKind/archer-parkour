@@ -59,17 +59,22 @@ function update_player() {
 //Movement
 
 document.addEventListener('keydown', (event) => {
-    if (player.sides.bottom >= canvas.height) {
-        jump(event);
-    }
+    movement(event);
 });
 
-function jump(event) {
+function movement(event) {
     if (event.code == 'Space') {
-        velocity=-18
+        if (player.sides.bottom >= canvas.height) {
+            velocity=-18
+        }
         if (player.sides.bottom >= canvas.height) {
             player.position.y = canvas.height - player.height
         }
-    }
+    }else if(event.code == 'KeyA' || event.code == 'ArrowLeft') {
+            player.position.x -= 6
+        
+    }else if(event.code == 'KeyD' || event.code == 'ArrowRight') {
+            player.position.x += 6
+        
+    }                                      
 }
-
