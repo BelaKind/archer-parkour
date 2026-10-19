@@ -16,7 +16,7 @@ class Player {
         this.width = 100
         this.height = 100
 
-        this.weight = 0.5
+        this.weight = 0.6
         
     }
     get sides() {
@@ -30,7 +30,7 @@ class Player {
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 }
-let gravity = 1
+let velocity = 0
 const player = new Player()
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
@@ -43,22 +43,33 @@ function animate() {
 
 window.requestAnimationFrame(animate);
 
-function update_player (){
-    if (!(player.sides.bottom >= canvas.height)) {
-        player.position.y += gravity
-        gravity+=0.4
-    }else{
-        document.addEventListener('keydown', (event) => {
-            if (event.code == 'Space') {
-                gravity=0
-                console.log("space")
-                for (let i; i<5; i++) {
-                    player.position.y += 5
-                }
-            }
-        });
+
+
+function update_player() {
+    if (!(player.sides.bottom > canvas.height)) {
+        player.position.y += velocity;
+        velocity += player.weight;
+    } else {
+        velocity = 0; 
     }
-     
-    
+}
+
+
+
+//Movement
+
+document.addEventListener('keydown', (event) => {
+    if (player.sides.bottom >= canvas.height) {
+        jump(event);
+    }
+});
+
+function jump(event) {
+    if (event.code == 'Space') {
+        velocity=-18
+        if (player.sides.bottom >= canvas.height) {
+            player.position.y = canvas.height - player.height
+        }
+    }
 }
 
