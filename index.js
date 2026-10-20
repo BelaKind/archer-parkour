@@ -5,12 +5,12 @@ canvas.width = 1024
 canvas.height = 576
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height);
-let player_velocity = 0
-let arrow_velocity = 0
+let arrows = []
 const keys = {
     isLeft: false,
     isRight: false,
     isSpace: false,
+    isShot: false,
 }
 
 class Player {
@@ -19,19 +19,16 @@ class Player {
             x: 100,
             y: 100,
         }
-
         this.width = 100
         this.height = 100
-
         this.weight = 0.6
-        
+        this.velocity = 0
     }
     get sides() {
         return {
             bottom: this.position.y + this.height
         }
     }
-
     draw_player() {
         c.fillStyle = 'red'; 
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
@@ -39,26 +36,30 @@ class Player {
 }
 
 class Arrow {
-    constructor() {
+    constructor(player_x, player_y) {
         this.position = {
-            x: 100,
-            y: 100,
+            x: player_x,
+            y: player_y,
         }
 
         this.width = 20
         this.height = 20
 
-        this.weight = 3
-        
+        this.weight = 0.05
+        this.velocity = 0
     }
     draw_arrow() {
         c.fillStyle = 'blue'; 
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
+    update_arrow() {
+        this.position.x += 14
+        this.position.y += this.velocity
+        this.velocity += this.weight
+    }
 }
 
 const player = new Player()
-const arrow = new Arrow()
 
 // ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 
@@ -69,22 +70,27 @@ function animate() {
     c.fillStyle = 'white'
     c.fillRect(0, 0, canvas.width, canvas.height);
     player.draw_player()
-    arrow.draw_arrow()
     update_player()
-    shoot_arrow()
+    for(let i=0; i<arrows.length; i++) {
+        arrows[i].update_arrow()
+        arrows[i].draw_arrow() 
+        if(arrows[i].position.x > canvas.width + arrows[i].width) {
+            arrows.splice(i, 1)
+        }
+    }
     window.requestAnimationFrame(animate);
 }
 
 function update_player() {
     if (!(player.sides.bottom > canvas.height)) {
-        player.position.y += player_velocity;
-        player_velocity += player.weight;
+        player.position.y += player.velocity;
+        player.velocity += player.weight;
     } else {
-        player_velocity = 0;
+        player.velocity = 0;
         player.position.y = canvas.height - player.height
     }
     if (keys.isSpace && player.sides.bottom >= canvas.height) {
-        player_velocity -= 18
+        player.velocity -= 18
     }
     if (keys.isLeft) {
         player.position.x -= 5
@@ -116,14 +122,9 @@ function movement(event) {
 
     if(event.code == 'KeyD' || event.code == 'ArrowRight') {
         keys.isRight = event.type == 'keydown'
-    }                                      
-}
-
-//arrow
-
-function shoot_arrow() {
-    arrow_velocity = -20
-    arrow.position.x += 10
-    arrow.position.y += arrow_velocity
-    arrow_velocity = arrow.weight
+    }
+    
+    if(event.code == 'Enter') {
+        arrows.push(new Arrow(player.position.x, player.position.y))        
+    }
 }
