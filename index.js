@@ -5,7 +5,8 @@ canvas.width = 1024
 canvas.height = 576
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height);
-let velocity = 0
+let player_velocity = 0
+let arrow_velocity = 0
 const keys = {
     isLeft: false,
     isRight: false,
@@ -37,7 +38,27 @@ class Player {
     }
 }
 
+class Arrow {
+    constructor() {
+        this.position = {
+            x: 100,
+            y: 100,
+        }
+
+        this.width = 20
+        this.height = 20
+
+        this.weight = 3
+        
+    }
+    draw_arrow() {
+        c.fillStyle = 'blue'; 
+        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    }
+}
+
 const player = new Player()
+const arrow = new Arrow()
 
 // ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 
@@ -48,20 +69,22 @@ function animate() {
     c.fillStyle = 'white'
     c.fillRect(0, 0, canvas.width, canvas.height);
     player.draw_player()
+    arrow.draw_arrow()
     update_player()
+    shoot_arrow()
     window.requestAnimationFrame(animate);
 }
 
 function update_player() {
     if (!(player.sides.bottom > canvas.height)) {
-        player.position.y += velocity;
-        velocity += player.weight;
+        player.position.y += player_velocity;
+        player_velocity += player.weight;
     } else {
-        velocity = 0;
+        player_velocity = 0;
         player.position.y = canvas.height - player.height
     }
     if (keys.isSpace && player.sides.bottom >= canvas.height) {
-        velocity -= 18
+        player_velocity -= 18
     }
     if (keys.isLeft) {
         player.position.x -= 5
@@ -94,4 +117,13 @@ function movement(event) {
     if(event.code == 'KeyD' || event.code == 'ArrowRight') {
         keys.isRight = event.type == 'keydown'
     }                                      
+}
+
+//arrow
+
+function shoot_arrow() {
+    arrow_velocity = -20
+    arrow.position.x += 10
+    arrow.position.y += arrow_velocity
+    arrow_velocity = arrow.weight
 }
