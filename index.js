@@ -59,10 +59,12 @@ class Arrow {
             y_steps_per_frame: 0,
             x_mouse_position: 0,
             y_mouse_position: 0,
+            speed_multiplier: 15,
         }
 
         this.width = 20
         this.height = 20
+        this.weight = 0.02
 
     }
     draw_arrow() {
@@ -70,8 +72,10 @@ class Arrow {
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
     update_arrow() {
-        this.position.x -= this.shot.x_steps_per_frame
-        this.position.y -= this.shot.y_steps_per_frame
+        this.position.x += this.shot.x_steps_per_frame * this.shot.speed_multiplier
+        this.position.y += this.shot.y_steps_per_frame * this.shot.speed_multiplier
+        this.shot.y_steps_per_frame += this.weight
+        console.log(this.shot.y_steps_per_frame)
     }
 }
 
@@ -106,7 +110,7 @@ function update_player() {
         player.position.y = canvas.height - player.height
     }
     if (keys.isSpace && player.sides.bottom >= canvas.height) {
-        player.velocity -= 18
+        player.velocity += -18
     }
     if (keys.isLeft) {
         player.position.x -= 5
@@ -122,11 +126,6 @@ function update_player() {
 canvas.addEventListener("click", get_mouse_position);
 
 function get_mouse_position(event) {
-    
-    
-    
-    console.log(event.pageX);
-    console.log(event.pageY);
     time.elapsedTime = performance.now()
     if(time.elapsedTime - time.startTime > time.interval) {
         arrows.push(new Arrow(player.position.x, player.position.y))
@@ -136,8 +135,10 @@ function get_mouse_position(event) {
         current_arrow.shot.y_mouse_position = event.pageY
         current_arrow.shot.x_difference = player.position.x - current_arrow.shot.x_mouse_position
         current_arrow.shot.y_difference = player.position.y - current_arrow.shot.y_mouse_position
-        current_arrow.shot.x_steps_per_frame = current_arrow.shot.x_difference / 100
-        current_arrow.shot.y_steps_per_frame = current_arrow.shot.y_difference / 100
+        current_arrow.shot.x_steps_per_frame = current_arrow.shot.x_difference / Math.sqrt(current_arrow.shot.x_difference ** 2 + current_arrow.shot.y_difference ** 2)
+        current_arrow.shot.y_steps_per_frame = current_arrow.shot.y_difference / Math.sqrt(current_arrow.shot.x_difference ** 2 + current_arrow.shot.y_difference ** 2)
+        console.log(current_arrow.shot.x_steps_per_frame)
+        console.log(current_arrow.shot.y_steps_per_frame)
     }
     
     
