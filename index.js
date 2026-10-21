@@ -10,7 +10,17 @@ const keys = {
     isLeft: false,
     isRight: false,
     isSpace: false,
-    isShot: false,
+}
+
+const time = {
+    elapsedTime: 0,
+    startTime: performance.now(),
+    interval: 500,
+}
+
+const mouse_position = {
+    mouse_x: null,
+    mouse_y: null,
 }
 
 class Player {
@@ -42,20 +52,26 @@ class Arrow {
             y: player_y,
         }
 
+        this.shot = {
+            x_difference: 0,
+            y_difference: 0,
+            x_steps_per_frame: 0,
+            y_steps_per_frame: 0,
+            x_mouse_position: 0,
+            y_mouse_position: 0,
+        }
+
         this.width = 20
         this.height = 20
 
-        this.weight = 0.05
-        this.velocity = 0
     }
     draw_arrow() {
         c.fillStyle = 'blue'; 
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
     update_arrow() {
-        this.position.x += 14
-        this.position.y += this.velocity
-        this.velocity += this.weight
+        this.position.x -= this.shot.x_steps_per_frame
+        this.position.y -= this.shot.y_steps_per_frame
     }
 }
 
@@ -69,9 +85,9 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = 'white'
     c.fillRect(0, 0, canvas.width, canvas.height);
-    player.draw_player()
     update_player()
-    for(let i=0; i<arrows.length; i++) {
+    player.draw_player()
+    for(let i=arrows.length-1; i>=0; i--) {
         arrows[i].update_arrow()
         arrows[i].draw_arrow() 
         if(arrows[i].position.x > canvas.width + arrows[i].width) {
@@ -103,6 +119,29 @@ function update_player() {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //Movement
+canvas.addEventListener("click", get_mouse_position);
+
+function get_mouse_position(event) {
+    
+    
+    
+    console.log(event.pageX);
+    console.log(event.pageY);
+    time.elapsedTime = performance.now()
+    if(time.elapsedTime - time.startTime > time.interval) {
+        arrows.push(new Arrow(player.position.x, player.position.y))
+        time.startTime = time.elapsedTime
+        current_arrow = arrows[arrows.length -1]
+        current_arrow.shot.x_mouse_position = event.pageX
+        current_arrow.shot.y_mouse_position = event.pageY
+        current_arrow.shot.x_difference = player.position.x - current_arrow.shot.x_mouse_position
+        current_arrow.shot.y_difference = player.position.y - current_arrow.shot.y_mouse_position
+        current_arrow.shot.x_steps_per_frame = current_arrow.shot.x_difference / 100
+        current_arrow.shot.y_steps_per_frame = current_arrow.shot.y_difference / 100
+    }
+    
+    
+}
 
 document.addEventListener('keydown', (event) => {
     movement(event);
@@ -124,7 +163,5 @@ function movement(event) {
         keys.isRight = event.type == 'keydown'
     }
     
-    if(event.code == 'Enter') {
-        arrows.push(new Arrow(player.position.x, player.position.y))        
-    }
+    
 }
