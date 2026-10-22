@@ -112,6 +112,13 @@ function animate(current_time) {
             arrows.splice(i, 1)
         }
     }
+    path = []
+    aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
+    calculate_flight_angle(mouse_position.mouse_x, mouse_position.mouse_y, aim_line)
+    for(let i=1; i<50; i++) {
+        path.push({x: aim_line.position.x, y: aim_line.position.y})
+        aim_line.update_arrow(0.01)
+    }
     if (path.length > 1) {
         c.beginPath();
         c.moveTo(path[0].x, path[0].y);
@@ -119,10 +126,11 @@ function animate(current_time) {
             c.lineTo(path[i].x, path[i].y);
         }
         c.setLineDash([2, 5]); 
-        c.strokeStyle = "gray";
-        c.lineWidth = 1;
+        c.strokeStyle = 'gray';
+        c.lineWidth = 2;
         c.stroke();
     }
+    
     
     window.requestAnimationFrame(animate);
     
@@ -137,15 +145,12 @@ function update_player(deltaTime) {
         player.position.y = canvas.height - player.height
     }
     if (keys.isSpace && player.sides.bottom >= canvas.height) {
-        path = []
         player.velocity -= player.jump_height
     }
     if (keys.isLeft) {
-        path = []
         player.position.x -= player.speed * deltaTime
     }
     if(keys.isRight) {
-        path = []
         player.position.x += player.speed * deltaTime
     }
     
@@ -153,31 +158,22 @@ function update_player(deltaTime) {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //Movement
-canvas.addEventListener("click", handle_shot);
-canvas.addEventListener("mousemove", draw_aimLine);
+canvas.addEventListener('click', handle_shot);
+canvas.addEventListener('mousemove', get_mouse_position);
 
-function draw_aimLine(event) {   
-    path = []
-    aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
+function get_mouse_position(event) {   
     var rect = canvas.getBoundingClientRect();
-    //mouse_position.mouse_x = event.clientX - rect.left
-    //mouse_position.mouse_y = event.clientY - rect.top
-    calculate_flight_angle(event, aim_line)
-
-    for(let i=1; i<50; i++) {
-        path.push({x: aim_line.position.x, y: aim_line.position.y})
-        aim_line.update_arrow(0.01)
-    }
-
-    
-    
-
+    mouse_position.mouse_x = event.clientX - rect.left
+    mouse_position.mouse_y = event.clientY - rect.top
 }
 function handle_shot(event) {
+    var rect = canvas.getBoundingClientRect();
+    mouse_position.mouse_x = event.clientX - rect.left
+    mouse_position.mouse_y = event.clientY - rect.top
     if(timer(500)) {
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
         current_arrow = arrows[arrows.length -1]
-        calculate_flight_angle(event, current_arrow)
+        calculate_flight_angle(mouse_position.mouse_x, mouse_position.mouse_y, current_arrow)
     }
     
     
@@ -206,14 +202,18 @@ function movement(event) {
     
 }
 
-function calculate_flight_angle(event, object) {
-    var rect = canvas.getBoundingClientRect();
-    object.shot.x_mouse_position = event.clientX - rect.left
-    object.shot.y_mouse_position = event.clientY - rect.top
-    object.shot.x_difference = object.position.x - object.shot.x_mouse_position
-    object.shot.y_difference = object.position.y - object.shot.y_mouse_position
-    object.shot.x_steps_per_frame = object.shot.x_difference / Math.sqrt(object.shot.x_difference ** 2 + object.shot.y_difference ** 2)
-    object.shot.y_steps_per_frame = object.shot.y_difference / Math.sqrt(object.shot.x_difference ** 2 + object.shot.y_difference ** 2)
+function calculate_flight_angle(mouse_x, mouse_y, object) {    
+    object.shot.x_difference = object.position.x - mouse_x
+    object.shot.y_difference = object.position.y - mouse_y
+    let vector_length = Math.sqrt(object.shot.x_difference ** 2 + object.shot.y_difference ** 2)
+    if(!(vector_length > 0)) {
+        object.shot.x_steps_per_frame = 1
+        object.shot.y_steps_per_frame = 0
+    }else{
+        object.shot.x_steps_per_frame = object.shot.x_difference / vector_length
+        object.shot.y_steps_per_frame = object.shot.y_difference / vector_length
+    }
+    
 }
 
 function timer(interval) {
