@@ -130,7 +130,6 @@ function animate(current_time) {
         c.lineWidth = 2;
         c.stroke();
     }
-    console.log(player.position.y)
     
     
     window.requestAnimationFrame(animate);
@@ -153,7 +152,7 @@ function update_player(delta_time) {
     }
     if(keys.isRight) {
         player.position.x += player.speed * delta_time
-        player.facing_direction = -1
+        player.facing_direction = 1
     }
     
 }
@@ -165,12 +164,20 @@ canvas.addEventListener('mousemove', get_mouse_position);
 
 function get_mouse_position(event) {   
     var rect = canvas.getBoundingClientRect();
-    mouse_position.mouse_x = event.clientX - rect.left
+    if(player.facing_direction == 1) {
+        mouse_position.mouse_x = player.position.x
+    }else{
+        mouse_position.mouse_x = player.position.x + (player.width / 2 + 20)
+    }
     mouse_position.mouse_y = event.clientY - rect.top
 }
 function handle_shot(event) {
     var rect = canvas.getBoundingClientRect();
-    mouse_position.mouse_x = event.clientX - rect.left
+    if(player.facing_direction == 1) {
+        mouse_position.mouse_x = player.position.x
+    }else{
+        mouse_position.mouse_x = player.position.x + (player.width / 2 + 20)
+    }
     mouse_position.mouse_y = event.clientY - rect.top
     if(timer(500)) {
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
@@ -215,7 +222,10 @@ function calculate_flight_angle(mouse_x, mouse_y, object) {
         object.shot.x_steps_per_frame = object.shot.x_difference / vector_length
         object.shot.y_steps_per_frame = object.shot.y_difference / vector_length
     }
-    
+    console.log(object.shot.x_steps_per_frame)
+    console.log(object.shot.y_steps_per_frame)
+
+    // object.shot.x_steps_per_frame *= player.facing_direction
 }
 
 function timer(interval) {
