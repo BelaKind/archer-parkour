@@ -8,23 +8,23 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 
 
 var path = []
-
-
+let aim_line = null
 let arrows = []
-let delta_time = 0
+
 const keys = {
     isLeft: false,
     isRight: false,
     isSpace: false,
 }
-
 const time = {
     elapsedTime: 0,
     startTime: performance.now(),
     interval: 500,
 }
-
-last_time = 0
+const delta_time = {
+    delta_time: 0,
+    last_time: 0,
+}
 
 const mouse_position = {
     mouse_x: null,
@@ -40,9 +40,10 @@ class Player {
         this.width = 100
         this.height = 100
         this.weight = 1500  
-        this.velocity = 0
+        this.velocity = 1500
         this.speed = 1000
         this.jump_height = 1000
+        this.facing_direction = 1
     }
     get sides() {
         return {
@@ -81,32 +82,31 @@ class Arrow {
         c.fillStyle = 'blue'; 
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
-    update_arrow(deltaTime) {
+    update_arrow(delta_time) {
         
-        this.position.x += (this.shot.x_steps_per_frame * this.shot.speed_multiplier) * deltaTime
-        this.position.y += (this.shot.y_steps_per_frame * this.shot.speed_multiplier) * deltaTime
-        this.shot.y_steps_per_frame += this.weight * deltaTime
+        this.position.x += (this.shot.x_steps_per_frame * this.shot.speed_multiplier) * delta_time
+        this.position.y += (this.shot.y_steps_per_frame * this.shot.speed_multiplier) * delta_time
+        this.shot.y_steps_per_frame += this.weight * delta_time
     }
 }
 
 const player = new Player()
-let aim_line = new Arrow()
+
 // ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 
 window.requestAnimationFrame(animate);
 
 function animate(current_time) {
-    
-    if (!last_time) last_time = current_time;
-    delta_time = (current_time - last_time) / 1000;
-    last_time = current_time;
+    if (!delta_time.last_time) delta_time.last_time = current_time;
+    delta_time.delta_time = (current_time - delta_time.last_time) / 1000;
+    delta_time.last_time = current_time;
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = 'white'
     c.fillRect(0, 0, canvas.width, canvas.height);
-    update_player(delta_time)
+    update_player(delta_time.delta_time)
     player.draw_player()
     for(let i=arrows.length-1; i>=0; i--) {
-        arrows[i].update_arrow(delta_time)
+        arrows[i].update_arrow(delta_time.delta_time)
         arrows[i].draw_arrow() 
         if(arrows[i].position.y > canvas.height) {
             arrows.splice(i, 1)
@@ -130,17 +130,17 @@ function animate(current_time) {
         c.lineWidth = 2;
         c.stroke();
     }
+    console.log(player.position.y)
     
     
     window.requestAnimationFrame(animate);
     
 }
 
-function update_player(deltaTime) {
-    if (!(player.sides.bottom > canvas.height)) {
-        player.position.y += player.velocity * deltaTime;
-        player.velocity += player.weight * deltaTime;
-    } else {
+function update_player(delta_time) {
+    player.velocity += player.weight * delta_time;    
+    player.position.y += player.velocity * delta_time;
+    if ((player.sides.bottom > canvas.height)) {
         player.velocity = 0;
         player.position.y = canvas.height - player.height
     }
@@ -148,10 +148,12 @@ function update_player(deltaTime) {
         player.velocity -= player.jump_height
     }
     if (keys.isLeft) {
-        player.position.x -= player.speed * deltaTime
+        player.position.x -= player.speed * delta_time
+        player.facing_direction = -1
     }
     if(keys.isRight) {
-        player.position.x += player.speed * deltaTime
+        player.position.x += player.speed * delta_time
+        player.facing_direction = -1
     }
     
 }
