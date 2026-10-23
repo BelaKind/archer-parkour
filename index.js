@@ -37,13 +37,16 @@ const player = new Player()
 window.requestAnimationFrame(animate);
 
 function animate(current_time) {
+    
     if (!delta_time.last_time) delta_time.last_time = current_time;
     delta_time.delta_time = (current_time - delta_time.last_time) / 1000;
     delta_time.last_time = current_time;
     c.clearRect(0, 0, canvas.width, canvas.height);
     c.fillStyle = 'white'
     c.fillRect(0, 0, canvas.width, canvas.height);
+    load_tilemap()
     player.update_player(delta_time.delta_time)
+    check_player_collision()
     player.draw_player()
     for(let i=arrows.length-1; i>=0; i--) {
         arrows[i].update_arrow(delta_time.delta_time)
@@ -155,4 +158,35 @@ function timer(interval) {
         return false
     }
     
+}
+
+function load_tilemap() {
+    for(let each_row=0; each_row<grid_rows; each_row++) {
+        for(let each_col=0; each_col<grid_cols; each_col++) {
+            let tile_index = each_row * grid_cols + each_col
+            if(first_level[tile_index] == 0) {
+                c.fillStyle = "blue"
+                c.fillRect(tile_width*each_col, tile_height*each_row, tile_width, tile_height)
+            }else{
+                c.fillStyle = "lightgray"
+                c.fillRect(tile_width*each_col, tile_height*each_row, tile_width, tile_height)
+            }
+        }
+    }
+}
+
+function check_player_collision() {
+    for(let each_row=0; each_row<grid_rows; each_row++) {
+        for(let each_col=0; each_col<grid_cols; each_col++) {
+            let tile_index = each_row * grid_cols + each_col
+            let is_colliding = player.position.x < tile_width*each_col + tile_width &&  
+            player.position.x + player.width > tile_width*each_col && 
+
+            player.position.y < tile_height*each_row + tile_height && player.position.y + player.height > tile_height*each_row
+            if(first_level[tile_index] == 0 && is_colliding) {
+                player.velocity = 0
+                player.position.y = tile_height*each_row - tile_height
+            }
+        }
+    }
 }

@@ -4,12 +4,12 @@ class Player {
             x: 100,
             y: 100,
         }
-        this.width = 100
-        this.height = 100
+        this.width = 30
+        this.height = 30
         this.weight = 1500  
         this.velocity = 1500
-        this.speed = 1000
-        this.jump_height = 1000
+        this.speed = 600
+        this.jump_height = 600
         this.facing_direction = 1
     }
     get sides() {
@@ -29,7 +29,7 @@ class Player {
             this.velocity = 0;
             this.position.y = canvas.height - this.height
         }
-        if (keys.isSpace && this.sides.bottom >= canvas.height) {
+        if (keys.isSpace && timer(200)) {
             this.velocity -= this.jump_height
         }
         if (keys.isLeft) {
