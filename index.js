@@ -222,8 +222,7 @@ function calculate_flight_angle(mouse_x, mouse_y, object) {
         object.shot.x_steps_per_frame = object.shot.x_difference / vector_length
         object.shot.y_steps_per_frame = object.shot.y_difference / vector_length
     }
-    console.log(object.shot.x_steps_per_frame)
-    console.log(object.shot.y_steps_per_frame)
+    
 
     // object.shot.x_steps_per_frame *= player.facing_direction
 }
