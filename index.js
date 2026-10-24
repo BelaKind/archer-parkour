@@ -68,9 +68,9 @@ function get_mouse_position(event) {
 }
 function handle_shot(event) {
     var rect = canvas.getBoundingClientRect();
-    
+    let timer = new Timer()
     mouse_position.mouse_y = event.clientY - rect.top
-    if(timer(500)) {
+    if(timer.calculate_time(500)) {
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
         current_arrow = arrows[arrows.length -1]
         calculate_flight_angle(mouse_position.mouse_y, current_arrow)
@@ -87,8 +87,11 @@ document.addEventListener('keyup', (event) => {
 });
 
 function movement(event) {
-    if (event.code == 'Space' && check_collision(player)) {
+    let timer = new Timer()
+    if (event.code == 'Space' && isOnGround && timer.calculate_time(500)) {
         keys.isSpace = event.type == 'keydown'
+        console.log(check_collision(player))
+
     }
 
     if(event.code == 'KeyA' || event.code == 'ArrowLeft') {
@@ -115,17 +118,6 @@ function calculate_flight_angle(mouse_y, object) {
     }
     
 
-}
-
-function timer(interval) {
-    time.elapsedTime = performance.now()
-    if(time.elapsedTime - time.startTime > interval) {
-        time.startTime = time.elapsedTime
-        return true
-    }else{
-        return false
-    }
-    
 }
 
 function load_tilemap() {
