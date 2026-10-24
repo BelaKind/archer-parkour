@@ -1,3 +1,5 @@
+let isOnGround = true
+
 class Player {
     constructor() {
         this.position = {    
@@ -25,29 +27,44 @@ class Player {
     update_player(deltaTime) {
         this.velocity += this.weight * deltaTime;    
         this.position.y += this.velocity * deltaTime;
-        if ((this.sides.bottom > check_collision().tile_y)) {
-            this.velocity = 0;
-            this.position.y = check_collision().tile_y - this.height
+        let isColliding = check_collision(this)
+        if (isColliding) {
+            if(this.sides.bottom > isColliding.tile_y) {
+                this.velocity = 0;
+                this.position.y = isColliding.tile_y - this.height
+                isOnGround = true
+            }
         }
         if (keys.isSpace) {
+            isOnGround = false
             this.velocity -= this.jump_height
+            isColliding = check_collision(this)
+            if(isColliding && this.velocity < 0) {
+                this.position.y = isColliding.tile_y + this.height
+            }else if(isColliding) {
+                this.position.y = isColliding.tile_y - this.height
+                isOnGround = true
+            }
         }
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
             this.facing_direction = -1
+            isColliding = check_collision(this)
             if(isColliding) {
-                this.position.x = check_collision(this).tile_x + tile_width
+                this.position.x = isColliding.tile_x + tile_width
             }
             
         }
         if(keys.isRight) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
+            isColliding = check_collision(this)
             if(isColliding) {
-                this.position.x = check_collision(this).tile_x - this.width
+                this.position.x = isColliding.tile_x - this.width
             }
         }
     }
 }
 
 const player = new Player()
+
