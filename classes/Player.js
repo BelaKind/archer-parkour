@@ -25,20 +25,29 @@ class Player {
     update_player(deltaTime) {
         this.velocity += this.weight * deltaTime;    
         this.position.y += this.velocity * deltaTime;
-        if ((this.sides.bottom > canvas.height)) {
+        if ((this.sides.bottom > check_collision().tile_y)) {
             this.velocity = 0;
-            this.position.y = canvas.height - this.height
+            this.position.y = check_collision().tile_y - this.height
         }
-        if (keys.isSpace && timer(200)) {
+        if (keys.isSpace) {
             this.velocity -= this.jump_height
         }
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
             this.facing_direction = -1
+            if(isColliding) {
+                this.position.x = check_collision(this).tile_x + tile_width
+            }
+            
         }
         if(keys.isRight) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
+            if(isColliding) {
+                this.position.x = check_collision(this).tile_x - this.width
+            }
         }
     }
 }
+
+const player = new Player()

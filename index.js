@@ -30,14 +30,11 @@ const mouse_position = {
     mouse_y: null,
 }
 
-const player = new Player()
-
 // ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 
 window.requestAnimationFrame(animate);
 
 function animate(current_time) {
-    
     if (!delta_time.last_time) delta_time.last_time = current_time;
     delta_time.delta_time = (current_time - delta_time.last_time) / 1000;
     delta_time.last_time = current_time;
@@ -46,37 +43,17 @@ function animate(current_time) {
     c.fillRect(0, 0, canvas.width, canvas.height);
     load_tilemap()
     player.update_player(delta_time.delta_time)
-    check_player_collision()
+    let isColliding = check_collision(player)
+    if(isColliding) {
+        player.velocity = 0
+        if(player.position.y < isColliding.tile_y) {
+            player.position.y = isColliding.tile_y - player.height
+        }
+    }
     player.draw_player()
-    for(let i=arrows.length-1; i>=0; i--) {
-        arrows[i].update_arrow(delta_time.delta_time)
-        arrows[i].draw_arrow() 
-        if(arrows[i].position.y > canvas.height) {
-            arrows.splice(i, 1)
-        }
-    }
-    path = []
-    aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
-    calculate_flight_angle(mouse_position.mouse_y, aim_line)
-    for(let i=1; i<50; i++) {
-        path.push({x: aim_line.position.x, y: aim_line.position.y})
-        aim_line.update_arrow(0.01)
-    }
-    if (path.length > 1) {
-        c.beginPath();
-        c.moveTo(path[0].x, path[0].y);
-        for (let i = 1; i < path.length; i++) {
-            c.lineTo(path[i].x, path[i].y);
-        }
-        c.setLineDash([2, 5]); 
-        c.strokeStyle = 'gray';
-        c.lineWidth = 2;
-        c.stroke();
-    }
-    
-    
+    draw_aim_line()
+    draw_arrows()
     window.requestAnimationFrame(animate);
-    
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -87,20 +64,11 @@ canvas.addEventListener('mousemove', get_mouse_position);
 
 function get_mouse_position(event) {   
     var rect = canvas.getBoundingClientRect();
-    /*if(player.facing_direction == 1) {
-        mouse_position.mouse_x = player.position.x
-    }else{
-        mouse_position.mouse_x = player.position.x + (player.width / 2 + 20)
-    }*/
     mouse_position.mouse_y = event.clientY - rect.top
 }
 function handle_shot(event) {
     var rect = canvas.getBoundingClientRect();
-    /*if(player.facing_direction == 1) {
-        mouse_position.mouse_x = player.position.x
-    }else{
-        mouse_position.mouse_x = player.position.x + (player.width / 2 + 20)
-    }*/
+    
     mouse_position.mouse_y = event.clientY - rect.top
     if(timer(500)) {
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
@@ -119,7 +87,7 @@ document.addEventListener('keyup', (event) => {
 });
 
 function movement(event) {
-    if (event.code == 'Space') {
+    if (event.code == 'Space' && check_collision(player)) {
         keys.isSpace = event.type == 'keydown'
     }
 
@@ -175,18 +143,50 @@ function load_tilemap() {
     }
 }
 
-function check_player_collision() {
+function check_collision(object) {
+    let isColliding
     for(let each_row=0; each_row<grid_rows; each_row++) {
         for(let each_col=0; each_col<grid_cols; each_col++) {
             let tile_index = each_row * grid_cols + each_col
-            let is_colliding = player.position.x < tile_width*each_col + tile_width &&  
-            player.position.x + player.width > tile_width*each_col && 
+            isColliding = object.position.x < tile_width*each_col + tile_width &&  
+            object.position.x + object.width > tile_width*each_col && 
+            object.position.y < tile_height*each_row + tile_height && object.position.y + object.height > tile_height*each_row
 
-            player.position.y < tile_height*each_row + tile_height && player.position.y + player.height > tile_height*each_row
-            if(first_level[tile_index] == 0 && is_colliding) {
-                player.velocity = 0
-                player.position.y = tile_height*each_row - tile_height
+            if(first_level[tile_index] == 0 && isColliding) {
+                return {tile_y: tile_height*each_row, tile_x: tile_width*each_col}
             }
+        }
+    }
+    return false
+}
+
+function draw_aim_line() {
+    path = []
+    aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
+    calculate_flight_angle(mouse_position.mouse_y, aim_line)
+    for(let i=1; i<50; i++) {
+        path.push({x: aim_line.position.x, y: aim_line.position.y})
+        aim_line.update_arrow(0.01)
+    }
+    if (path.length > 1) {
+        c.beginPath();
+        c.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) {
+            c.lineTo(path[i].x, path[i].y);
+        }
+        c.setLineDash([2, 5]); 
+        c.strokeStyle = 'gray';
+        c.lineWidth = 2;
+        c.stroke();
+    }
+}
+
+function draw_arrows() {
+    for(let i=arrows.length-1; i>=0; i--) {
+        arrows[i].update_arrow(delta_time.delta_time)
+        arrows[i].draw_arrow() 
+        if(arrows[i].position.y > canvas.height) {
+            arrows.splice(i, 1)
         }
     }
 }
