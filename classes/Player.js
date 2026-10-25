@@ -1,4 +1,3 @@
-let isOnGround = true
 
 class Player {
     constructor() {
@@ -9,10 +8,13 @@ class Player {
         this.width = 30
         this.height = 30
         this.weight = 1500  
-        this.velocity = 1500
-        this.speed = 600
+        this.velocity = 0
+        this.speed = 400
         this.jump_height = 600
         this.facing_direction = 1
+        this.shoot_timer = new Timer()
+        this.jump_timer = new Timer()
+        this.isOnGround = false
     }
     get sides() {
         return {
@@ -27,24 +29,22 @@ class Player {
     update_player(deltaTime) {
         this.velocity += this.weight * deltaTime;    
         this.position.y += this.velocity * deltaTime;
+        this.isOnGround = false
         let isColliding = check_collision(this)
         if (isColliding) {
-            if(this.sides.bottom > isColliding.tile_y) {
+            if(this.sides.bottom > isColliding.tile_y && this.velocity > 0) {
                 this.velocity = 0;
                 this.position.y = isColliding.tile_y - this.height
-                isOnGround = true
+                this.isOnGround = true
+            }else{
+                this.velocity = 0
+                this.position.y = isColliding.tile_y + tile_height
             }
         }
-        if (keys.isSpace) {
-            isOnGround = false
+        if (keys.isSpace && this.jump_timer.calculate_time(500) && this.isOnGround) {
+            this.isOnGround = false
             this.velocity -= this.jump_height
-            isColliding = check_collision(this)
-            if(isColliding && this.velocity < 0) {
-                this.position.y = isColliding.tile_y + this.height
-            }else if(isColliding) {
-                this.position.y = isColliding.tile_y - this.height
-                isOnGround = true
-            }
+            this.isOnGround = true
         }
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
