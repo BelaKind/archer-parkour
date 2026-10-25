@@ -56,14 +56,20 @@ class Player {
             if(isColliding) {
                 this.position.x = isColliding.tile_x + first_level.width
             }
+            if(this.position.x < 0) {
+                this.position.x = 0
+            }
             
         }
-        if(keys.isRight) {
+        if(keys.isRight || this.position.x > canvas.height) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
             isColliding = cycle_tiles(this)
             if(isColliding) {
                 this.position.x = isColliding.tile_x - this.width
+            }
+            if(this.position.x > canvas.height) {
+                this.position.x = canvas.width - this.width
             }
         }
     }

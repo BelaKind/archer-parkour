@@ -26,10 +26,20 @@ class Arrow {
         c.fillStyle = 'blue'; 
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
-    update_arrow(deltaTime) {
+    update_arrow(deltaTime, current_arrow) {
         
         this.position.x += (this.shot.x_steps_per_frame * this.shot.speed_multiplier) * deltaTime
         this.position.y += (this.shot.y_steps_per_frame * this.shot.speed_multiplier) * deltaTime
         this.shot.y_steps_per_frame += this.weight * deltaTime
+        if(cycle_tiles(this).tyle_type == 2) {
+            arrows.splice(current_arrow, 1)
+            first_level.map[cycle_tiles(this).index] = 1
+            return false
+        }else if(cycle_tiles(this)) {
+            this.shot.x_steps_per_frame = 0
+            this.shot.y_steps_per_frame = 0
+        }
+        
+        return true
     }
 }

@@ -60,11 +60,6 @@ function get_mouse_movement(event) {
     player.aim_y = Math.max(-200, Math.min(player.aim_y, 200))    
 }
 
-function mapValue(value, inMin, inMax, outMin, outMax) {
-  if (inMax === inMin) return outMin; 
-  
-  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-}
 
 function handle_shot(event) {
     try {
@@ -79,7 +74,7 @@ function handle_shot(event) {
         console.log('shoot')
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
         current_arrow = arrows[arrows.length -1]
-        calculate_flight_angle(mouse_position.mouse_y, current_arrow)
+        calculate_flight_angle(current_arrow)
     }
     
     
@@ -110,7 +105,7 @@ function movement(event) {
     
 }
 
-function calculate_flight_angle(mouse_y, object) {    
+function calculate_flight_angle(object) {    
     object.shot.x_difference = player.facing_direction * player.aim_sensitivity
     object.shot.y_difference = object.position.y - (player.position.y + player.height / 2) + player.aim_y
     let vector_length = Math.sqrt(object.shot.x_difference ** 2 + object.shot.y_difference ** 2)
@@ -132,15 +127,18 @@ function load_tilemap() {
             if(first_level.map[tile_index] == 0) {
                 c.fillStyle = "blue"
                 c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
-            }else{
+            }else if(first_level.map[tile_index] == 1){
                 c.fillStyle = "lightgray"
+                c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
+            }else if(first_level.map[tile_index] == 2) {
+                c.fillStyle = "purple"
                 c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
             }
         }
     }
 }
 
-function cycle_tiles() {
+function cycle_tiles(object) {
     let isColliding
     for(let each_row=0; each_row<first_level.grid_rows; each_row++) {
         for(let each_col=0; each_col<first_level.grid_cols; each_col++) {
@@ -148,9 +146,12 @@ function cycle_tiles() {
             first_level.position.x = first_level.width*each_col
             first_level.position.y = first_level.height*each_row
 
-            isColliding = check_collision(player, first_level)
+            isColliding = check_collision(object, first_level)
             if(first_level.map[tile_index] == 0 && isColliding) {
                 return {tile_y: first_level.position.y, tile_x: first_level.position.x}
+            }
+            if(first_level.map[tile_index] == 2 && isColliding) {
+                return {tyle_type: 2, index: tile_index, tile_y: first_level.position.y, tile_x: first_level.position.x}
             }
         }
     }
@@ -168,8 +169,8 @@ function check_collision(objectA, objectB) {
 function draw_aim_line() {
     path = []
     aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
-    calculate_flight_angle(mouse_position.mouse_y, aim_line)
-    for(let i=1; i<50; i++) {
+    calculate_flight_angle(aim_line)
+    for(let i=1; i<15; i++) {
         path.push({x: aim_line.position.x, y: aim_line.position.y})
         aim_line.update_arrow(0.01)
     }
@@ -188,10 +189,14 @@ function draw_aim_line() {
 
 function draw_arrows() {
     for(let i=arrows.length-1; i>=0; i--) {
-        arrows[i].update_arrow(delta_time.delta_time)
+        current_arrow = i
         arrows[i].draw_arrow() 
-        if(arrows[i].position.y > canvas.height) {
-            arrows.splice(i, 1)
+        isAlive = arrows[i].update_arrow(delta_time.delta_time, current_arrow)
+        if (isAlive) {
+            if(arrows[i].position.y > canvas.height) {
+                arrows.splice(i, 1)
+            }
         }
+        
     }
 }
