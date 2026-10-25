@@ -4,4 +4,4 @@
 
 ## Screenshots & gameplay
 
-![Check out my awsome gameplay:](Assets/gameplay.gif.gif)
+![Check out my awsome gameplay:](Assets/gameplay.gif)
