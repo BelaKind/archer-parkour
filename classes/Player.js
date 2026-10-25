@@ -15,6 +15,8 @@ class Player {
         this.shoot_timer = new Timer()
         this.jump_timer = new Timer()
         this.isOnGround = false
+        this.aim_sensitivity = 100
+        this.aim_y = 0
     }
     get sides() {
         return {
@@ -30,18 +32,19 @@ class Player {
         this.velocity += this.weight * deltaTime;    
         this.position.y += this.velocity * deltaTime;
         this.isOnGround = false
-        let isColliding = check_collision(this)
+        let isColliding = cycle_tiles(this)
         if (isColliding) {
             if(this.sides.bottom > isColliding.tile_y && this.velocity > 0) {
                 this.velocity = 0;
                 this.position.y = isColliding.tile_y - this.height
                 this.isOnGround = true
+                console.log('collision')
             }else{
                 this.velocity = 0
-                this.position.y = isColliding.tile_y + tile_height
+                this.position.y = isColliding.tile_y + first_level.height
             }
         }
-        if (keys.isSpace && this.jump_timer.calculate_time(500) && this.isOnGround) {
+        if (keys.isSpace && this.jump_timer.calculate_time(100) && this.isOnGround) {
             this.isOnGround = false
             this.velocity -= this.jump_height
             this.isOnGround = true
@@ -49,16 +52,16 @@ class Player {
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
             this.facing_direction = -1
-            isColliding = check_collision(this)
+            isColliding = cycle_tiles(this)
             if(isColliding) {
-                this.position.x = isColliding.tile_x + tile_width
+                this.position.x = isColliding.tile_x + first_level.width
             }
             
         }
         if(keys.isRight) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
-            isColliding = check_collision(this)
+            isColliding = cycle_tiles(this)
             if(isColliding) {
                 this.position.x = isColliding.tile_x - this.width
             }
