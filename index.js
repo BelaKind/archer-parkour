@@ -53,13 +53,26 @@ function animate(current_time) {
 
 //Movement
 canvas.addEventListener('click', handle_shot);
-canvas.addEventListener('mousemove', get_mouse_position);
+canvas.addEventListener('mousemove', get_mouse_movement);
 
-function get_mouse_position(event) {   
-    var rect = canvas.getBoundingClientRect();
-    mouse_position.mouse_y = event.clientY - rect.top
+function get_mouse_movement(event) {   
+    player.aim_y += event.movementY * 0.6
+    player.aim_y = Math.max(-200, Math.min(player.aim_y, 200))    
 }
+
+function mapValue(value, inMin, inMax, outMin, outMax) {
+  if (inMax === inMin) return outMin; 
+  
+  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+}
+
 function handle_shot(event) {
+    try {
+        canvas.requestPointerLock({unadjustedMovement: true});
+    } catch (error) {
+      console.error("pointer lock error", error);
+    }
+    canvas.requestPointerLock();
     var rect = canvas.getBoundingClientRect();
     mouse_position.mouse_y = event.clientY - rect.top
     if(player.shoot_timer.calculate_time(500)) {
@@ -83,7 +96,6 @@ function movement(event) {
     let timer = new Timer()
     if (event.code == 'Space') {
         keys.isSpace = event.type == 'keydown'
-        console.log(check_collision(player))
 
     }
 
@@ -99,8 +111,8 @@ function movement(event) {
 }
 
 function calculate_flight_angle(mouse_y, object) {    
-    object.shot.x_difference = (player.position.x + 100) * player.facing_direction
-    object.shot.y_difference = object.position.y - mouse_y
+    object.shot.x_difference = player.facing_direction * player.aim_sensitivity
+    object.shot.y_difference = object.position.y - (player.position.y + player.height / 2) + player.aim_y
     let vector_length = Math.sqrt(object.shot.x_difference ** 2 + object.shot.y_difference ** 2)
     if(!(vector_length > 0)) {
         object.shot.x_steps_per_frame = 1
@@ -114,35 +126,43 @@ function calculate_flight_angle(mouse_y, object) {
 }
 
 function load_tilemap() {
-    for(let each_row=0; each_row<grid_rows; each_row++) {
-        for(let each_col=0; each_col<grid_cols; each_col++) {
-            let tile_index = each_row * grid_cols + each_col
-            if(first_level[tile_index] == 0) {
+    for(let each_row=0; each_row<first_level.grid_rows; each_row++) {
+        for(let each_col=0; each_col<first_level.grid_cols; each_col++) {
+            let tile_index = each_row * first_level.grid_cols + each_col
+            if(first_level.map[tile_index] == 0) {
                 c.fillStyle = "blue"
-                c.fillRect(tile_width*each_col, tile_height*each_row, tile_width, tile_height)
+                c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
             }else{
                 c.fillStyle = "lightgray"
-                c.fillRect(tile_width*each_col, tile_height*each_row, tile_width, tile_height)
+                c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
             }
         }
     }
 }
 
-function check_collision(object) {
+function cycle_tiles() {
     let isColliding
-    for(let each_row=0; each_row<grid_rows; each_row++) {
-        for(let each_col=0; each_col<grid_cols; each_col++) {
-            let tile_index = each_row * grid_cols + each_col
-            isColliding = object.position.x < tile_width*each_col + tile_width &&  
-            object.position.x + object.width > tile_width*each_col && 
-            object.position.y < tile_height*each_row + tile_height && object.position.y + object.height > tile_height*each_row
+    for(let each_row=0; each_row<first_level.grid_rows; each_row++) {
+        for(let each_col=0; each_col<first_level.grid_cols; each_col++) {
+            let tile_index = each_row * first_level.grid_cols + each_col
+            first_level.position.x = first_level.width*each_col
+            first_level.position.y = first_level.height*each_row
 
-            if(first_level[tile_index] == 0 && isColliding) {
-                return {tile_y: tile_height*each_row, tile_x: tile_width*each_col}
+            isColliding = check_collision(player, first_level)
+            if(first_level.map[tile_index] == 0 && isColliding) {
+                return {tile_y: first_level.position.y, tile_x: first_level.position.x}
             }
         }
     }
     return false
+}
+
+function check_collision(objectA, objectB) {
+    isColliding = objectA.position.x < objectB.position.x + objectB.width &&  
+            objectA.position.x + objectA.width > objectB.position.x && 
+            objectA.position.y < objectB.position.y + objectB.height && 
+            objectA.position.y + objectA.height > objectB.position.y
+    return isColliding
 }
 
 function draw_aim_line() {
