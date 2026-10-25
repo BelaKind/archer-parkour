@@ -2,8 +2,8 @@
 class Player {
     constructor() {
         this.position = {    
-            x: 100,
-            y: 100,
+            x: 0,
+            y: 738,
         }
         this.width = 30
         this.height = 30
@@ -38,7 +38,6 @@ class Player {
                 this.velocity = 0;
                 this.position.y = isColliding.tile_y - this.height
                 this.isOnGround = true
-                console.log('collision')
             }else{
                 this.velocity = 0
                 this.position.y = isColliding.tile_y + first_level.height
@@ -61,19 +60,19 @@ class Player {
             }
             
         }
-        if(keys.isRight || this.position.x > canvas.height) {
+        if(keys.isRight || this.position.x > canvas.width) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
             isColliding = cycle_tiles(this)
             if(isColliding) {
                 this.position.x = isColliding.tile_x - this.width
             }
-            if(this.position.x > canvas.height) {
+            if(this.position.x + this.width > canvas.width) {
                 this.position.x = canvas.width - this.width
             }
         }
     }
 }
 
-const player = new Player()
+let player = new Player()
 
