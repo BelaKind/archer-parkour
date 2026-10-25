@@ -16,7 +16,7 @@ class Arrow {
         }
 
         this.width = 20
-        this.height = 20
+        this.height = 5
         this.weight = 0.8
 
         this.timer = new Timer()
