@@ -19,6 +19,8 @@ class Arrow {
         this.height = 20
         this.weight = 0.8
 
+        this.timer = new Timer()
+
     }
     draw_arrow() {
         c.fillStyle = 'blue'; 
