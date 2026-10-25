@@ -43,13 +43,6 @@ function animate(current_time) {
     c.fillRect(0, 0, canvas.width, canvas.height);
     load_tilemap()
     player.update_player(delta_time.delta_time)
-    let isColliding = check_collision(player)
-    if(isColliding) {
-        player.velocity = 0
-        if(player.position.y < isColliding.tile_y) {
-            player.position.y = isColliding.tile_y - player.height
-        }
-    }
     player.draw_player()
     draw_aim_line()
     draw_arrows()
@@ -68,9 +61,9 @@ function get_mouse_position(event) {
 }
 function handle_shot(event) {
     var rect = canvas.getBoundingClientRect();
-    let timer = new Timer()
     mouse_position.mouse_y = event.clientY - rect.top
-    if(timer.calculate_time(500)) {
+    if(player.shoot_timer.calculate_time(500)) {
+        console.log('shoot')
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
         current_arrow = arrows[arrows.length -1]
         calculate_flight_angle(mouse_position.mouse_y, current_arrow)
@@ -88,7 +81,7 @@ document.addEventListener('keyup', (event) => {
 
 function movement(event) {
     let timer = new Timer()
-    if (event.code == 'Space' && isOnGround && timer.calculate_time(500)) {
+    if (event.code == 'Space') {
         keys.isSpace = event.type == 'keydown'
         console.log(check_collision(player))
 
