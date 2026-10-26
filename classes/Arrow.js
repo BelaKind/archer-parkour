@@ -18,16 +18,28 @@ class Arrow {
         this.width = 20
         this.height = 5
         this.weight = 0.8
+        this.isStuck
+        this.angle
 
         this.timer = new Timer()
         this.isAimline = false
+
+        this.arrowhead = {
+            radius: 10,
+            x: this.position.x + (this.width - 10),
+            y: this.position.y + this.height / 2,
+        }
 
     }
     draw_arrow(angle) {
         c.fillStyle = 'blue'; 
         c.save();
         c.translate(this.position.x + this.width / 2,this.position.y + this.height / 2)
-        c.rotate(angle)
+        if(this.isStuck) {
+            c.rotate(this.angle)
+        }else{
+            c.rotate(angle)
+        }
         c.fillRect(0, 0, this.width, this.height);
         c.restore(); 
     }
@@ -41,6 +53,11 @@ class Arrow {
             first_level.map[cycle_tiles(this).index] = 1
             return false
         }else if(cycle_tiles(this)) {
+            if(!this.isStuck) {
+                this.isStuck = true
+                this.angle = calculate_flight_angle(this.shot.y_steps, this.shot.x_steps)
+            }
+            
             this.shot.x_steps = 0
             this.shot.y_steps = 0
         }
