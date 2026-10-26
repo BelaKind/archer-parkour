@@ -75,7 +75,6 @@ function animate(current_time) {
             reset_game()
         }
     }
-    console.log(player.position.y)
     window.requestAnimationFrame(animate);
 }
 
@@ -103,7 +102,7 @@ function handle_shot(event) {
     if(player.shoot_timer.calculate_time(500)) {
         arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
         current_arrow = arrows[arrows.length -1]
-        calculate_flight_angle(current_arrow)
+        calculate_flight_vector(current_arrow)
     }
     
     
@@ -138,18 +137,22 @@ function movement(event) {
     
 }
 
-function calculate_flight_angle(object) {    
+function calculate_flight_vector(object) {    
     object.shot.x_difference = player.facing_direction * player.aim_sensitivity
     object.shot.y_difference = object.position.y - (player.position.y + player.height / 2) + player.aim_y
     let vector_length = Math.sqrt(object.shot.x_difference ** 2 + object.shot.y_difference ** 2)
     if(!(vector_length > 0)) {
-        object.shot.x_steps_per_frame = 1
-        object.shot.y_steps_per_frame = 0
+        object.shot.x_steps = 1
+        object.shot.y_steps = 0
     }else{
-        object.shot.x_steps_per_frame = object.shot.x_difference / vector_length
-        object.shot.y_steps_per_frame = object.shot.y_difference / vector_length
+        object.shot.x_steps = object.shot.x_difference / vector_length
+        object.shot.y_steps = object.shot.y_difference / vector_length
     }
-    
+}
+
+function calculate_flight_angle(y, x) {
+    let raw_angle = Math.atan2(y, x)
+    return raw_angle
 
 }
 
@@ -202,7 +205,8 @@ function check_collision(objectA, objectB) {
 function draw_aim_line() {
     path = []
     aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
-    calculate_flight_angle(aim_line)
+    aim_line.isAimline = true
+    calculate_flight_vector(aim_line)
     for(let i=1; i<15; i++) {
         path.push({x: aim_line.position.x, y: aim_line.position.y})
         aim_line.update_arrow(0.01)
@@ -223,8 +227,8 @@ function draw_aim_line() {
 function draw_arrows() {
     for(let i=arrows.length-1; i>=0; i--) {
         current_arrow = i
-        arrows[i].draw_arrow() 
-        isAlive = arrows[i].update_arrow(delta_time.delta_time, current_arrow)
+        arrows[i].draw_arrow(calculate_flight_angle(arrows[i].shot.y_steps, arrows[i].shot.x_steps)) 
+        let isAlive = arrows[i].update_arrow(delta_time.delta_time, current_arrow)
         if (isAlive) {
             if(arrows[i].position.y > canvas.height) {
                 arrows.splice(i, 1)
