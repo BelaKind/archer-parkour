@@ -4,6 +4,15 @@
 
 ## Screenshots & gameplay
 
+
+| gamplay | the first level |
+| :---: | :---: | 
+| ![gameplay](Assets/gameplay.gif) | ![first level](Assets/level_design.png) |
+
+| death screen | win screen |
+| :---: | :---: | 
+| ![death screen](Assets/death_screen.png) | ![win message](Assets/win_screen.png) |
+
 ![gameplay](Assets/gameplay.gif) ![first level](Assets/level_design.png)
 ![death screen](Assets/death_screen.png) ![win message](Assets/win_screen.png)
 
