@@ -182,7 +182,7 @@ function cycle_tiles(object) {
             first_level.position.x = first_level.width*each_col
             first_level.position.y = first_level.height*each_row
 
-            isColliding = check_collision(object, first_level)
+            isColliding = check_rectangle_collision(object, first_level)
             if(first_level.map[tile_index] == 0 && isColliding) {
                 return {tile_y: first_level.position.y, tile_x: first_level.position.x}
             }
@@ -194,7 +194,7 @@ function cycle_tiles(object) {
     return false
 }
 
-function check_collision(objectA, objectB) {
+function check_rectangle_collision(objectA, objectB) {
     isColliding = objectA.position.x < objectB.position.x + objectB.width &&  
             objectA.position.x + objectA.width > objectB.position.x && 
             objectA.position.y < objectB.position.y + objectB.height && 
