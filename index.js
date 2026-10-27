@@ -183,9 +183,7 @@ function cycle_tiles(object, type) {
             first_level.position.y = first_level.height*each_row
             if(type == 'rectangle') {
                 isColliding = check_rectangle_collision(object, first_level)
-                console.log(1)
             }else if(type == 'circle') {
-                console.log(2)
                 isColliding = check_circle_collision(object.arrowhead.x, object.arrowhead.y, object.arrowhead.radius, first_level.position.x, first_level.position.y, first_level.width, first_level.height)
             }
             
