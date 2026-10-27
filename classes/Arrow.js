@@ -25,7 +25,7 @@ class Arrow {
         this.isAimline = false
 
         this.arrowhead = {
-            radius: 10,
+            radius: 50,
             x: this.position.x + (this.width - 10),
             y: this.position.y + this.height / 2,
         }
@@ -44,15 +44,14 @@ class Arrow {
         c.restore(); 
     }
     update_arrow(deltaTime, current_arrow) {
-        
         this.position.x += (this.shot.x_steps * this.shot.speed_multiplier) * deltaTime
         this.position.y += (this.shot.y_steps * this.shot.speed_multiplier) * deltaTime
         this.shot.y_steps += this.weight * deltaTime
-        if(cycle_tiles(this).tyle_type == 2 && !this.isAimline) {
+        if(cycle_tiles(this, 'circle').tyle_type == 2 && !this.isAimline) {
             arrows.splice(current_arrow, 1)
-            first_level.map[cycle_tiles(this).index] = 1
+            first_level.map[cycle_tiles(this, 'circle').index] = 1
             return false
-        }else if(cycle_tiles(this)) {
+        }else if(cycle_tiles(this, 'circle')) {
             if(!this.isStuck) {
                 this.isStuck = true
                 this.angle = calculate_flight_angle(this.shot.y_steps, this.shot.x_steps)

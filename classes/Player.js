@@ -32,7 +32,7 @@ class Player {
         this.velocity += this.weight * deltaTime;    
         this.position.y += this.velocity * deltaTime;
         this.isOnGround = false
-        let isColliding = cycle_tiles(this)
+        let isColliding = cycle_tiles(this, 'rectangle')
         if (isColliding) {
             if(this.sides.bottom > isColliding.tile_y && this.velocity > 0) {
                 this.velocity = 0;
@@ -51,7 +51,7 @@ class Player {
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
             this.facing_direction = -1
-            isColliding = cycle_tiles(this)
+            isColliding = isColliding = cycle_tiles(this, 'rectangle')
             if(isColliding) {
                 this.position.x = isColliding.tile_x + first_level.width
             }
@@ -63,7 +63,7 @@ class Player {
         if(keys.isRight || this.position.x > canvas.width) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
-            isColliding = cycle_tiles(this)
+            isColliding = cycle_tiles(this, 'rectangle')
             if(isColliding) {
                 this.position.x = isColliding.tile_x - this.width
             }

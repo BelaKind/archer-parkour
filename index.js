@@ -174,15 +174,21 @@ function load_tilemap() {
     }
 }
 
-function cycle_tiles(object) {
+function cycle_tiles(object, type) {
     let isColliding
     for(let each_row=0; each_row<first_level.grid_rows; each_row++) {
         for(let each_col=0; each_col<first_level.grid_cols; each_col++) {
             let tile_index = each_row * first_level.grid_cols + each_col
             first_level.position.x = first_level.width*each_col
             first_level.position.y = first_level.height*each_row
-
-            isColliding = check_rectangle_collision(object, first_level)
+            if(type == 'rectangle') {
+                isColliding = check_rectangle_collision(object, first_level)
+                console.log(1)
+            }else if(type == 'circle') {
+                console.log(2)
+                isColliding = check_circle_collision(object.arrowhead.x, object.arrowhead.y, object.arrowhead.radius, first_level.position.x, first_level.position.y, first_level.width, first_level.height)
+            }
+            
             if(first_level.map[tile_index] == 0 && isColliding) {
                 return {tile_y: first_level.position.y, tile_x: first_level.position.x}
             }
@@ -201,6 +207,17 @@ function check_rectangle_collision(objectA, objectB) {
             objectA.position.y + objectA.height > objectB.position.y
     return isColliding
 }
+
+function check_circle_collision(circle_x, circle_y, radius, rect_x, rect_y, rect_w, rect_h) {
+    let closest_X = Math.max(rect_x, Math.min(circle_x, rect_x + rect_w));
+    let closest_Y = Math.max(rect_y, Math.min(circle_y, rect_y + rect_h));
+
+    // Compare its distance to the radius
+    let delta_x = circle_x - closest_X;
+    let delta_y = circle_y - closest_Y;
+    return delta_x * delta_x + delta_y * delta_y <= radius * radius
+}
+
 
 function draw_aim_line() {
     path = []
