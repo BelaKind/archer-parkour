@@ -7,9 +7,9 @@
 
 | gameplay | the first level |
 | :---: | :---: | 
-| ![gameplay](Assets/gameplay.gif) | ![first level](Assets/level_design.png) |
+| ![gameplay](Screenshots/gameplay.gif) | ![first level](Screenshots/level_design.png) |
 | **death screen** | **win screen** |
-| ![death screen](Assets/death_screen.png) | ![win message](Assets/win_screen.png) |
+| ![death screen](Screenshots/death_screen.png) | ![win message](Screenshots/win_screen.png) |
 
 
 ## Usage
