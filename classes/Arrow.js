@@ -42,7 +42,10 @@ class Arrow {
         }else{
             c.rotate(angle)
         }
-        c.fillRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
+        if (arrow.complete) {
+            c.drawImage(arrow, -(this.width / 2), -(this.height / 2))
+        }
+        //c.fillRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
         c.restore(); 
     }
     update_arrow(deltaTime, current_arrow) {

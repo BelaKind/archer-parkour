@@ -6,7 +6,7 @@ class Player {
             y: 738,
         }
         this.width = 30
-        this.height = 30
+        this.height = 60
         this.weight = 1500  
         this.velocity = 0
         this.speed = 400
@@ -24,8 +24,11 @@ class Player {
         }
     }
     draw_player() {
-        c.fillStyle = 'red'; 
-        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+        if (arrow.complete) {
+            c.drawImage(player_sprite, this.position.x, this.position.y, 64, 64)
+        }
+        // c.fillStyle = 'red'; 
+        // c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 
     update_player(deltaTime) {
