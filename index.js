@@ -1,15 +1,6 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
-const regular_sandstone = new Image()
-regular_sandstone.src = 'assets/regular_sandstone.png'
-const target = new Image()
-target.src = 'assets/target_v2.png'
-const arrow = new Image()
-arrow.src = 'assets/arrow.png'
-const player_sprite = new Image()
-player_sprite.src = 'assets/player.png'
-
 canvas.width = 1920
 canvas.height = 1088
 c.fillStyle = 'white'
@@ -24,12 +15,9 @@ const keys = {
     isRight: false,
     isSpace: false,
     isR: false,
+    isEsc: false,
 }
-const time = {
-    elapsedTime: 0,
-    startTime: performance.now(),
-    interval: 500,
-}
+
 const delta_time = {
     delta_time: 0,
     last_time: 0,
@@ -40,49 +28,72 @@ const mouse_position = {
     mouse_y: null,
 }
 
-// ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
+//textures
+const regular_sandstone = new Image()
+const target = new Image()
+const arrow = new Image()
+const player_sprite = new Image()
 
+function load_textures() {
+    regular_sandstone.src = 'assets/regular_sandstone.png'
+    target.src = 'assets/target_v2.png'
+    arrow.src = 'assets/arrow.png'
+    player_sprite.src = 'assets/player.png'
+}
+load_textures()
+
+// ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 window.requestAnimationFrame(animate);
 
 function animate(current_time) {
     if (!delta_time.last_time) delta_time.last_time = current_time;
-    delta_time.delta_time = (current_time - delta_time.last_time) / 1000;
+    delta_time.delta_time = Math.min((current_time - delta_time.last_time) / 1000, 0.033) 
     delta_time.last_time = current_time;
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    c.globalAlpha = 1
-    c.fillStyle = '#a4e4fc'
-    c.fillRect(0, 0, canvas.width, canvas.height);
-    load_tilemap()
-    player.update_player(delta_time.delta_time)
-    player.draw_player()
-    draw_aim_line()
-    draw_arrows()
-    c.font = '20px Arial';
-    c.fillStyle = 'red'
-    c.fillText(`Targets remaining: ${count_targets()}`, 30, 30);
-    if(player.position.y > canvas.height) {
+    game.update_game_state()
+    if(game.state == 'playing') {
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        c.globalAlpha = 1
+        c.fillStyle = '#a4e4fc'
+        c.fillRect(0, 0, canvas.width, canvas.height);
+        load_tilemap()
+        player.update_player(delta_time.delta_time)
+        player.draw_player()
+        draw_aim_line()
+        draw_arrows()
+        c.font = '20px "SimSun"';
+        c.fillStyle = 'red'
+        c.fillText(`Targets remaining: ${count_targets()}`, 30, 30);
+    }else if(game.state == 'dead') {
+        c.clearRect(0, 0, canvas.width, canvas.height)
+        c.globalAlpha = 1
+        c.fillStyle = '#a4e4fc'
+        c.fillRect(0, 0, canvas.width, canvas.height);
+        load_tilemap()
+        player.draw_player()
+        draw_aim_line()
+        draw_arrows()
         c.font = '50px Arial';
         c.fillStyle = 'red'
         c.fillText(`YOU DIED`, canvas.width/2 - 100, canvas.height/2);
         c.fillText(`Press 'R' to restart`, canvas.width/2 - 100, canvas.height/2 + 50);
-        c.fillStyle = 'red'
-        c.globalAlpha = 0.2;
+        c.globalAlpha = 0.6;
         c.fillRect(0, 0, canvas.width, canvas.height);
         if(keys.isR) {
             reset_game()
         }
-        
-    }else if(count_targets() == 0) {
+    }else if(game.state == 'won') {
         c.font = '50px Arial';
         c.fillStyle = 'yellow'
         c.fillText(`YOU WON`, canvas.width/2 - 100, canvas.height/2);
         c.fillText(`Press 'R' to restart`, canvas.width/2 - 100, canvas.height/2 + 50);
-        c.fillStyle = 'yellow'
-        c.globalAlpha = 0.2;
+        c.globalAlpha = 0.3;
         c.fillRect(0, 0, canvas.width, canvas.height);
         if(keys.isR) {
             reset_game()
         }
+    }else if(game.state == 'paused') {
+        c.fillStyle = 'lightgray'
+        c.fillRect((canvas.width/2)-250, (canvas.height/2)-250, 500, 500)
     }
     window.requestAnimationFrame(animate);
 }
@@ -91,6 +102,15 @@ function animate(current_time) {
 
 //Movement
 canvas.addEventListener('click', handle_shot);
+document.addEventListener('pointerlockchange', (event) => {
+    if(document.pointerLockElement){
+        keys.isEsc = false
+        game.isMouseLocked = true
+    }else{
+        keys.isEsc = true
+        game.isMouseLocked = false
+    }
+})
 canvas.addEventListener('mousemove', get_mouse_movement);
 
 function get_mouse_movement(event) {   
@@ -99,38 +119,40 @@ function get_mouse_movement(event) {
 }
 
 
-function handle_shot(event) {
+function handle_shot() {
     try {
         canvas.requestPointerLock({unadjustedMovement: true});
+        
     } catch (error) {
       console.error("pointer lock error", error);
     }
-    canvas.requestPointerLock();
-    var rect = canvas.getBoundingClientRect();
-    mouse_position.mouse_y = event.clientY - rect.top
-    if(player.shoot_timer.calculate_time(500)) {
-        arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
-        current_arrow = arrows[arrows.length -1]
-        let vector = calculate_flight_vector(current_arrow)
-        current_arrow.shot.x_steps = vector.x_steps
-        current_arrow.shot.y_steps = vector.y_steps
+    if(game.isMouseLocked) {
+        if(player.shoot_timer.calculate_time(500)) {
+            arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
+            current_arrow = arrows[arrows.length -1]
+            let vector = calculate_flight_vector(current_arrow)
+            current_arrow.shot.x_steps = vector.x_steps
+            current_arrow.shot.y_steps = vector.y_steps
+        }
     }
     
+
     
 }
 
 document.addEventListener('keydown', (event) => {
-    movement(event);
+    keys_pressed(event);
 });
 document.addEventListener('keyup', (event) => {
-    movement(event);
+    keys_pressed(event);
 });
 
-function movement(event) {
+
+
+function keys_pressed(event) {
     let timer = new Timer()
     if (event.code == 'Space') {
         keys.isSpace = event.type == 'keydown'
-
     }
 
     if(event.code == 'KeyA' || event.code == 'ArrowLeft') {
@@ -143,6 +165,11 @@ function movement(event) {
 
     if(event.code == 'KeyR') {
         keys.isR = event.type == 'keydown'
+    }
+
+    if(event.code == 'Escape' && event.type == 'keydown') {
+        keys.isEsc = !keys.isEsc
+        
     }
     
     
@@ -176,19 +203,17 @@ function load_tilemap() {
     for(let each_row=0; each_row<first_level.grid_rows; each_row++) {
         for(let each_col=0; each_col<first_level.grid_cols; each_col++) {
             let tile_index = each_row * first_level.grid_cols + each_col
-            if(first_level.map[tile_index] == 0) {
+            if(game.current_map[tile_index] == 0) {
                 
                 if (regular_sandstone.complete) {
                     c.drawImage(regular_sandstone, first_level.width*each_col, first_level.height*each_row)
                 }
-                // c.fillStyle = "green"
-                // c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
-            }else if(first_level.map[tile_index] == 2) {
+                
+            }else if(game.current_map[tile_index] == 2) {
                 if (target.complete) {
                     c.drawImage(target, first_level.width*each_col, first_level.height*each_row)
                 }
-                // c.fillStyle = "black"
-                // c.fillRect(first_level.width*each_col, first_level.height*each_row, first_level.width, first_level.height)
+                
             }
         }
     }
@@ -207,10 +232,10 @@ function cycle_tiles(object, type) {
                 isColliding = check_circle_collision(object.arrowhead.x, object.arrowhead.y, object.arrowhead.radius, first_level.position.x, first_level.position.y, first_level.width, first_level.height)
             }
             
-            if(first_level.map[tile_index] == 0 && isColliding) {
+            if(game.current_map[tile_index] == 0 && isColliding) {
                 return {tile_y: first_level.position.y, tile_x: first_level.position.x}
             }
-            if(first_level.map[tile_index] == 2 && isColliding) {
+            if(game.current_map[tile_index] == 2 && isColliding) {
                 return {tyle_type: 2, index: tile_index, tile_y: first_level.position.y, tile_x: first_level.position.x}
             }
         }
@@ -277,57 +302,18 @@ function draw_arrows() {
 
 function count_targets() {
     let targets_remaining = 0
-    for(let i=0; i<first_level.map.length; i++) {
-        if(first_level.map[i] == 2) {
+    for(let i=0; i<game.current_map.length; i++) {
+        if(game.current_map[i] == 2) {
             targets_remaining ++
         }
     }
     return targets_remaining 
 }
 
-
-
-
-
 function reset_game() {
     player = new Player()
     first_level = new Level()
-    first_level.map = [
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 1, 1, 1, 1, 1, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 
-0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 
-0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 
-0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-
-]
+    game.current_map = first_level.map
     arrows = []
 }
+
