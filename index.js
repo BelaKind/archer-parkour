@@ -33,12 +33,14 @@ const regular_sandstone = new Image()
 const target = new Image()
 const arrow = new Image()
 const player_sprite = new Image()
+const menu_background = new Image()
 
 function load_textures() {
     regular_sandstone.src = 'assets/regular_sandstone.png'
     target.src = 'assets/target_v2.png'
     arrow.src = 'assets/arrow.png'
     player_sprite.src = 'assets/player.png'
+    menu_background.src = 'assets/menu.png'
 }
 load_textures()
 
@@ -92,8 +94,15 @@ function animate(current_time) {
             reset_game()
         }
     }else if(game.state == 'paused') {
-        c.fillStyle = 'lightgray'
-        c.fillRect((canvas.width/2)-250, (canvas.height/2)-250, 500, 500)
+        if (menu_background.complete) {
+            c.drawImage(menu_background, (canvas.width/2)-500, (canvas.height/2)-500, 1000, 1000)
+            c.font = '70px Arial';
+            c.textAlign = 'center'
+            c.textBaseline = 'middle'
+            c.fillStyle = '#f8b800'
+            c.fillText('GAME PAUSED', canvas.width/2, (canvas.height/2)-120)
+            c.fillText('Press to continue', canvas.width/2, (canvas.height/2)+50)
+        }
     }
     window.requestAnimationFrame(animate);
 }
