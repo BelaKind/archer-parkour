@@ -34,6 +34,10 @@ const target = new Image()
 const arrow = new Image()
 const player_sprite = new Image()
 const menu_background = new Image()
+const Press_start_2_p = new FontFace(
+  'Press_start_2_p', 
+  'url(assets/fonts/PressStart2P-Regular.ttf)'
+);
 
 function load_textures() {
     regular_sandstone.src = 'assets/regular_sandstone.png'
@@ -41,6 +45,13 @@ function load_textures() {
     arrow.src = 'assets/arrow.png'
     player_sprite.src = 'assets/player.png'
     menu_background.src = 'assets/menu.png'
+    Press_start_2_p.load()
+    .then((font) => {
+        document.fonts.add(font)
+    })
+    .catch((error) => {
+        console.log(`font loading error: ${error}`)
+    });
 }
 load_textures()
 
@@ -62,7 +73,7 @@ function animate(current_time) {
         player.draw_player()
         draw_aim_line()
         draw_arrows()
-        c.font = '20px "SimSun"';
+        c.font = '20px "Press_start_2_p"';
         c.fillStyle = 'red'
         c.fillText(`Targets remaining: ${count_targets()}`, 30, 30);
     }else if(game.state == 'dead') {
@@ -74,7 +85,7 @@ function animate(current_time) {
         player.draw_player()
         draw_aim_line()
         draw_arrows()
-        c.font = '50px Arial';
+        c.font = '50px Press_start_2_p';
         c.fillStyle = 'red'
         c.fillText(`YOU DIED`, canvas.width/2 - 100, canvas.height/2);
         c.fillText(`Press 'R' to restart`, canvas.width/2 - 100, canvas.height/2 + 50);
@@ -84,7 +95,7 @@ function animate(current_time) {
             reset_game()
         }
     }else if(game.state == 'won') {
-        c.font = '50px Arial';
+        c.font = '50px Press_start_2_p';
         c.fillStyle = 'yellow'
         c.fillText(`YOU WON`, canvas.width/2 - 100, canvas.height/2);
         c.fillText(`Press 'R' to restart`, canvas.width/2 - 100, canvas.height/2 + 50);
@@ -96,12 +107,12 @@ function animate(current_time) {
     }else if(game.state == 'paused') {
         if (menu_background.complete) {
             c.drawImage(menu_background, (canvas.width/2)-500, (canvas.height/2)-500, 1000, 1000)
-            c.font = '70px Arial';
+            c.font = '30px Press_start_2_p';
             c.textAlign = 'center'
             c.textBaseline = 'middle'
             c.fillStyle = '#f8b800'
             c.fillText('GAME PAUSED', canvas.width/2, (canvas.height/2)-120)
-            c.fillText('Press to continue', canvas.width/2, (canvas.height/2)+50)
+            c.fillText('Click to continue', canvas.width/2, (canvas.height/2)+50)
         }
     }
     window.requestAnimationFrame(animate);
