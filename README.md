@@ -5,9 +5,9 @@
 ## Screenshots & gameplay
 
 
-| gameplay |  level design |
+| gameplay |  player design |
 | :---: | :---: | 
-| ![gameplay](Screenshots/gameplay.gif) | ![level design](Screenshots/level_design.png) |
+| ![gameplay](Screenshots/gameplay.gif) | ![player design](Screenshots/player.png) |
 | **start screen** | **death screen** |
 | ![start screen](Screenshots/start_screen.png) | ![death message](Screenshots/death_screen.png) |
 
