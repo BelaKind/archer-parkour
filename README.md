@@ -1,15 +1,15 @@
 # ARCHER PARKOUR
 
-**A cool browser game where you play an archer and have to pass a level by shooting at every target on the map**
+**A cool browser game where you play a roman archer and have to pass a level by shooting at every target in the map**
 
 ## Screenshots & gameplay
 
 
 | gameplay | the first level |
 | :---: | :---: | 
-| ![gameplay](Screenshots/gameplay.gif) | ![first level](Screenshots/level_design.png) |
+| ![gameplay](Screenshots/gameplay.gif) | ![level design](Screenshots/level_design.png) |
 | **death screen** | **win screen** |
-| ![death screen](Screenshots/death_screen.png) | ![win message](Screenshots/win_screen.png) |
+| ![start screen](Screenshots/start_screen.png) | ![win message](Screenshots/win_screen.png) |
 
 
 ## Usage
@@ -20,9 +20,9 @@ Starting this game is just as easy as opening this link [Archer Parkour](https:/
 
 - Use A/D to move left and right (or arrow keys)
 - Space to jump
-- At start you have to click somewhere in the website once then you can aim by moving up and down with your mouse
+- move your mouse up/down to aim
 - left-click to shoot
-- esc to unlock your cursor
+- esc to pause the game and unlock your cursor
 - press R to respawn when you died or won
 
 ## Built with
@@ -33,18 +33,29 @@ This game is completly built with vanilla browser technologies, mostly with java
 - **CSS3** Used for styling. In this case to give the canvas a size and aspect ratio
 - **JavaScript (ES6+)** Powers the complete game (mechanics, rendering, world, logic)
 
+## New features & changes
+
+- better physics for the arrows (rotating in flight direction)
+- textures for solid tiles arrows, the player and targets. Also a texture for start menu, pause screen, death screen and win screen
+- start screen with brief controls tutorial
+- pause screen (gaame pauses automatically when you dont focus the window anymore or press esc)
+- new level design
+
 ## Coming soon
 
-- textures for the world, player and arrows
 - more and better animations for all objects
 - enemies
 - multiple levels
-- pause menu
 
 ## Known bugs
 
-- when the player's aim line touches a targets it vanishes just like it was shot
+- The hitbox of the player is not matching the image you see
+- Targets are solid tiles the player can stand on
 
 ## Side note
 
 I'm building this game for terra by Hack Club. This was my work of the first weeks, updates will come in the next weeks of the terra event.
+
+## Credits
+
+- **Font:** 'Press Start 2P' designed by [CodeMan38](https://zone38.net) (Licensed under [SIL Open Font License 1.1](http://sil.org))
