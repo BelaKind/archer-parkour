@@ -5,11 +5,11 @@
 ## Screenshots & gameplay
 
 
-| gameplay | the first level |
+| gameplay |  level design |
 | :---: | :---: | 
 | ![gameplay](Screenshots/gameplay.gif) | ![level design](Screenshots/level_design.png) |
-| **death screen** | **win screen** |
-| ![start screen](Screenshots/start_screen.png) | ![win message](Screenshots/win_screen.png) |
+| **start screen** | **death screen** |
+| ![start screen](Screenshots/start_screen.png) | ![death message](Screenshots/death_screen.png) |
 
 
 ## Usage
