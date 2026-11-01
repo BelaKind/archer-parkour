@@ -24,11 +24,17 @@ class Player {
         }
     }
     draw_player() {
-        if (arrow.complete) {
-            c.drawImage(player_sprite, this.position.x, this.position.y, 64, 64)
+        if (player_sprite.complete) {
+            if(this.facing_direction == -1) {
+                c.save()
+                c.translate(this.position.x + this.width, this.position.y);
+                c.scale(-1, 1)
+                c.drawImage(player_sprite, 0, 0, 64, 64)
+                c.restore()
+            }else{
+                c.drawImage(player_sprite, this.position.x, this.position.y, 64, 64)
+            }
         }
-        // c.fillStyle = 'red'; 
-        // c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 
     update_player(deltaTime) {

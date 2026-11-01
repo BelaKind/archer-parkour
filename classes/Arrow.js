@@ -59,7 +59,7 @@ class Arrow {
             
             if(cycle_tiles(this, 'circle').tyle_type == 2 && !this.isAimline) {
                 arrows.splice(current_arrow, 1)
-                first_level.map[cycle_tiles(this, 'circle').index] = 1
+                game.current_map[cycle_tiles(this, 'circle').index] = 1
                 return false
             }else if(cycle_tiles(this, 'circle')) {
                 if(!this.isStuck) {
