@@ -364,5 +364,6 @@ function reset_game() {
     game = new Game()
     arrows = []
     game.state = 'playing'
+    game.isMouseLocked = true
 }
 
