@@ -1,5 +1,6 @@
 class Game {
     constructor() {
+        this.level_number = 1
         this.state = 'startMenu'
         this.current_map = [...first_level.map]
         this.isMouseLocked = false
