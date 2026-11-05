@@ -4,6 +4,7 @@ class Game {
         this.state = 'startMenu'
         this.current_map = [...first_level.map]
         this.isMouseLocked = false
+        this.current_level = first_level
     }
 
     update_game_state() {
@@ -20,4 +21,3 @@ class Game {
         
     }
 }
-let game = new Game()
