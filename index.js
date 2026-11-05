@@ -1,5 +1,7 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
+const template_canvas = document.createElement('canvas')
+const template_c = template_canvas.getContext('2d')
 
 canvas.width = 1920
 canvas.height = 1088
@@ -9,6 +11,7 @@ c.fillRect(0, 0, canvas.width, canvas.height)
 var path = []
 let aim_line = null
 let arrows = []
+
 
 const keys = {
     isLeft: false,
@@ -28,6 +31,10 @@ const mouse_position = {
     mouse_y: null,
 }
 
+//create objects
+let first_level = new Level()
+let game = new Game()
+
 //textures
 const regular_sandstone = new Image()
 const target = new Image()
@@ -45,7 +52,7 @@ function load_textures() {
     target.src = 'assets/target_v2.png'
     arrow.src = 'assets/arrow.png'
     player_sprite.src = 'assets/player.png'
-    menu_background.src = 'assets/menu.png'
+    menu_background.src = 'ass   ets/menu.png'
     level_template.src = `assets/levels/level_${game.level_number}.png`
     Press_start_2_p.load()
     .then((font) => {
@@ -54,17 +61,29 @@ function load_textures() {
     .catch((error) => {
         console.log(`font loading error: ${error}`)
     })
+    
+    level_template.onload = () => {
+        template_canvas.width = level_template.naturalWidth
+        template_canvas.height = level_template.naturalHeight
+        template_c.drawImage(level_template, 0, 0)
+        console.log(template_c.getImageData(0, 0, template_canvas.width, template_canvas.height))
+    }
 }
 
 
 load_textures()
-const template_canvas = document.createElement('canvas')
-const template_c = template_canvas.getContext('2d')
+
+
+
+
+
+
 
 // ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 window.requestAnimationFrame(animate)
 
 function animate(current_time) {
+    
     if (!delta_time.last_time) delta_time.last_time = current_time
     delta_time.delta_time = Math.min((current_time - delta_time.last_time) / 1000, 0.033) 
     delta_time.last_time = current_time
@@ -274,7 +293,9 @@ function load_tilemap() {
     }
 }
 
+
 function cycle_tiles(object, type) {
+
     let isColliding
     for(let each_row=0; each_row<first_level.grid_rows; each_row++) {
         for(let each_col=0; each_col<first_level.grid_cols; each_col++) {
