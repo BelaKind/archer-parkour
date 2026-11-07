@@ -1,7 +1,5 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-const template_canvas = document.createElement('canvas')
-const template_c = template_canvas.getContext('2d')
 
 canvas.width = 1920
 canvas.height = 1088
@@ -33,51 +31,9 @@ const mouse_position = {
 
 //create objects
 let first_level = new Level()
-let game = new Game()
-
-//textures
-const regular_sandstone = new Image()
-const target = new Image()
-const arrow = new Image()
-const player_sprite = new Image()
-const menu_background = new Image()
-let level_template = new Image()
-const Press_start_2_p = new FontFace(
-  'Press_start_2_p', 
-  'url(assets/fonts/PressStart2P-Regular.ttf)'
-)
-
-function load_textures() {
-    regular_sandstone.src = 'assets/regular_sandstone.png'
-    target.src = 'assets/target_v2.png'
-    arrow.src = 'assets/arrow.png'
-    player_sprite.src = 'assets/player.png'
-    menu_background.src = 'ass   ets/menu.png'
-    level_template.src = `assets/levels/level_${game.level_number}.png`
-    Press_start_2_p.load()
-    .then((font) => {
-        document.fonts.add(font)
-    })
-    .catch((error) => {
-        console.log(`font loading error: ${error}`)
-    })
-    
-    level_template.onload = () => {
-        template_canvas.width = level_template.naturalWidth
-        template_canvas.height = level_template.naturalHeight
-        template_c.drawImage(level_template, 0, 0)
-        console.log(template_c.getImageData(0, 0, template_canvas.width, template_canvas.height))
-    }
-}
-
-
-load_textures()
-
-
-
-
-
-
+const game = new Game()
+const assets_loader = new AssetsLoader()
+let player = new Player()
 
 // ++++++++++++++++++++++++++++Every Frame+++++++++++++++++++++++++++++++++++++++
 window.requestAnimationFrame(animate)
