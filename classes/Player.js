@@ -83,5 +83,4 @@ class Player {
     }
 }
 
-let player = new Player()
 
