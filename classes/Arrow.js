@@ -33,7 +33,7 @@ class Arrow {
         }
 
     }
-    draw_arrow(angle) {
+    draw_arrow(angle, texture) {
         c.fillStyle = 'blue'; 
         c.save();
         c.translate(this.position.x + this.width / 2,this.position.y + this.height / 2)
@@ -42,10 +42,7 @@ class Arrow {
         }else{
             c.rotate(angle)
         }
-        if (arrow.complete) {
-            c.drawImage(arrow, -(this.width / 2), -(this.height / 2))
-        }
-        //c.fillRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
+        c.drawImage(texture, -(this.width / 2), -(this.height / 2))
         c.restore(); 
     }
     update_arrow(deltaTime, current_arrow) {
@@ -57,9 +54,9 @@ class Arrow {
             this.arrowhead.x = (this.position.x + this.width / 2) + (unit_vector.unit_vector_x * (this.width / 2 - this.arrowhead.radius))
             this.arrowhead.y = (this.position.y + this.height / 2) + (unit_vector.unit_vector_y * (this.width / 2 - this.arrowhead.radius))
             
-            if(cycle_tiles(this, 'circle').tyle_type == 2 && !this.isAimline) {
+            if(cycle_tiles(this, 'circle').tyle_type == 5 && !this.isAimline) {
                 arrows.splice(current_arrow, 1)
-                game.current_map[cycle_tiles(this, 'circle').index] = 1
+                game.current_map[cycle_tiles(this, 'circle').index] = 0
                 return false
             }else if(cycle_tiles(this, 'circle')) {
                 if(!this.isStuck) {
