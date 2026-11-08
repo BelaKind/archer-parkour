@@ -23,18 +23,17 @@ class Player {
             bottom: this.position.y + this.height
         }
     }
-    draw_player() {
-        if (player_sprite.complete) {
-            if(this.facing_direction == -1) {
-                c.save()
-                c.translate(this.position.x + this.width, this.position.y);
-                c.scale(-1, 1)
-                c.drawImage(player_sprite, 0, 0, 64, 64)
-                c.restore()
-            }else{
-                c.drawImage(player_sprite, this.position.x, this.position.y, 64, 64)
-            }
+    draw_player(texture) {
+        if(this.facing_direction == -1) {
+            c.save()
+            c.translate(this.position.x + this.width, this.position.y);
+            c.scale(-1, 1)
+            c.drawImage(texture, 0, 0, 64, 64)
+            c.restore()
+        }else{
+            c.drawImage(texture, this.position.x, this.position.y, 64, 64)
         }
+        
     }
 
     update_player(deltaTime) {
