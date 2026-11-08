@@ -2,9 +2,17 @@ class Game {
     constructor() {
         this.level_number = 1
         this.state = 'startMenu'
-        this.current_map = [...first_level.map]
         this.isMouseLocked = false
-        this.current_level = first_level
+        this.current_level = new Level()
+        this.current_map = this.current_level.map
+    }
+
+    load_level() {
+        return assets_loader.load_level_template(this.level_number)
+        .then(() => {
+          this.current_level.build_level_from_template(assets_loader.assets['level_template'], tile_types)
+        })
+        
     }
 
     update_game_state() {
