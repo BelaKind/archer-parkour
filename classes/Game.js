@@ -4,7 +4,7 @@ class Game {
         this.state = 'startMenu'
         this.isMouseLocked = false
         this.current_level = new Level()
-        this.current_map = this.current_level.map
+        this.current_map = null
     }
 
     load_level() {

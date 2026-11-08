@@ -40,14 +40,16 @@ function startup() {
     assets_loader.load_all_assets()
     .then(() => {
         return game.load_level()
+        
     .then(() => {
+        game.current_map = [...game.current_level.map]
         window.requestAnimationFrame(animate)
     })
     })
     .catch((error) => {
         console.log(`error while starting the game: ${error}`)
     })
-
+    
 }
 
 // start the game
@@ -354,6 +356,8 @@ function reset_game() {
     player = new Player()
     arrows = []
     game.state = 'playing'
+    game.current_map = [...game.current_level.map]
+    // keep the mouse locked after restarting
     game.isMouseLocked = true
 }
 
