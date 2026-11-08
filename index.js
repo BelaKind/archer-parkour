@@ -261,7 +261,7 @@ function load_tilemap() {
 
 
 function cycle_tiles(object, type) {
-
+    let collisions = []
     let isColliding
     for(let each_row=0; each_row<game.current_level.grid_rows; each_row++) {
         for(let each_col=0; each_col<game.current_level.grid_cols; each_col++) {
@@ -273,16 +273,12 @@ function cycle_tiles(object, type) {
             }else if(type == 'circle') {
                 isColliding = check_circle_collision(object.arrowhead.x, object.arrowhead.y, object.arrowhead.radius, game.current_level.position.x, game.current_level.position.y, game.current_level.width, game.current_level.height)
             }
-            
-            if(game.current_map[tile_index] == 1 && isColliding) {
-                return {tile_y: game.current_level.position.y, tile_x: game.current_level.position.x}
-            }
-            if(game.current_map[tile_index] == 5 && isColliding) {
-                return {tyle_type: 5, index: tile_index, tile_y: game.current_level.position.y, tile_x: game.current_level.position.x}
+            if(isColliding) {
+                collisions.push({index: tile_index, identifier: game.current_map[tile_index], tile_y: game.current_level.position.y, tile_x: game.current_level.position.x})
             }
         }
     }
-    return false
+    return collisions
 }
 
 function check_rectangle_collision(objectA, objectB) {
@@ -345,7 +341,7 @@ function draw_arrows() {
 function count_targets() {
     let targets_remaining = 0
     for(let i=0; i<game.current_map.length; i++) {
-        if(game.current_map[i] == 5) {
+        if(tile_list[game.current_map[i]].texture == 'target') {
             targets_remaining ++
         }
     }
