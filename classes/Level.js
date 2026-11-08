@@ -39,7 +39,7 @@ class Level {
             let r = template_data[i]
             let g = template_data[i+1]
             let b = template_data[i+2]
-            let alpha = template_data[i+3]
+            //let alpha = template_data[i+3]
 
             this.map[i/4] = tile_types[this.rgb_to_hex(r,g,b)].identifier
             i += 3
