@@ -40,28 +40,30 @@ class Player {
         this.velocity += this.weight * deltaTime;    
         this.position.y += this.velocity * deltaTime;
         this.isOnGround = false
-        let isColliding = cycle_tiles(this, 'rectangle')
-        if (isColliding) {
-            if(this.sides.bottom > isColliding.tile_y && this.velocity > 0) {
+        let colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+        if(colliding_tile) {
+            if(this.sides.bottom > colliding_tile.tile_y && this.velocity > 0) {
                 this.velocity = 0;
-                this.position.y = isColliding.tile_y - this.height
+                this.position.y = colliding_tile.tile_y - this.height
                 this.isOnGround = true
+                console.log('ground')
             }else{
                 this.velocity = 0
-                this.position.y = isColliding.tile_y + first_level.height
+                this.position.y = colliding_tile.tile_y + first_level.height
+            }
+            if (keys.isSpace && this.jump_timer.calculate_time(100) && this.isOnGround) {
+                this.isOnGround = false
+                this.velocity -= this.jump_height
+                this.isOnGround = true
             }
         }
-        if (keys.isSpace && this.jump_timer.calculate_time(100) && this.isOnGround) {
-            this.isOnGround = false
-            this.velocity -= this.jump_height
-            this.isOnGround = true
-        }
+
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
             this.facing_direction = -1
-            isColliding = isColliding = cycle_tiles(this, 'rectangle')
-            if(isColliding) {
-                this.position.x = isColliding.tile_x + first_level.width
+            colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+            if(colliding_tile) {
+                this.position.x = colliding_tile.tile_x + first_level.width
             }
             if(this.position.x < 0) {
                 this.position.x = 0
@@ -71,9 +73,9 @@ class Player {
         if(keys.isRight || this.position.x > canvas.width) {
             this.position.x += this.speed * deltaTime
             this.facing_direction = 1
-            isColliding = cycle_tiles(this, 'rectangle')
-            if(isColliding) {
-                this.position.x = isColliding.tile_x - this.width
+            colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+            if(colliding_tile) {
+                this.position.x = colliding_tile.tile_x - this.width
             }
             if(this.position.x + this.width > canvas.width) {
                 this.position.x = canvas.width - this.width

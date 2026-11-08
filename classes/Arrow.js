@@ -46,6 +46,11 @@ class Arrow {
         c.restore(); 
     }
     update_arrow(deltaTime, current_arrow) {
+        let colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier].texture == 'target')
+
+        if(!colliding_tile) {
+            colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier])
+        }
         if(!this.isStuck) {
             this.position.x += (this.shot.x_steps * this.shot.speed_multiplier) * deltaTime
             this.position.y += (this.shot.y_steps * this.shot.speed_multiplier) * deltaTime
@@ -53,20 +58,19 @@ class Arrow {
             let unit_vector = normalize_vector(this.shot.x_steps, this.shot.y_steps)
             this.arrowhead.x = (this.position.x + this.width / 2) + (unit_vector.unit_vector_x * (this.width / 2 - this.arrowhead.radius))
             this.arrowhead.y = (this.position.y + this.height / 2) + (unit_vector.unit_vector_y * (this.width / 2 - this.arrowhead.radius))
-            
-            if(cycle_tiles(this, 'circle').tyle_type == 5 && !this.isAimline) {
-                arrows.splice(current_arrow, 1)
-                game.current_map[cycle_tiles(this, 'circle').index] = 0
-                return false
-            }else if(cycle_tiles(this, 'circle')) {
-                if(!this.isStuck) {
+            if(colliding_tile) {
+                if(tile_list[colliding_tile.identifier].texture == 'target' && !this.isAimline) {
+                    arrows.splice(current_arrow, 1)
+                    game.current_map[colliding_tile.index] = 0
+                    return false
+                }else if(colliding_tile) {
                     this.isStuck = true
                     this.angle = calculate_flight_angle(this.shot.y_steps, this.shot.x_steps)
+                    this.shot.x_steps = 0
+                    this.shot.y_steps = 0
                 }
-                
-                this.shot.x_steps = 0
-                this.shot.y_steps = 0
             }
+            
             
             return true
         }else{
