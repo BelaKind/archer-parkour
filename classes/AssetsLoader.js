@@ -2,7 +2,7 @@ class AssetsLoader {
     constructor() {
         this.textures = [
             {name: 'regular_sandstone'},
-            {name: 'target_v2'},
+            {name: 'target'},
             {name: 'player'},
             {name: 'arrow'},
             {name: 'menu'},
