@@ -40,6 +40,7 @@ This game is completly built with vanilla browser technologies, mostly with java
 - start screen with brief controls tutorial
 - pause screen (gaame pauses automatically when you dont focus the window anymore or press esc)
 - new level design
+- improved level loading (from a png file)
 
 ## Coming soon
 
@@ -54,7 +55,7 @@ This game is completly built with vanilla browser technologies, mostly with java
 
 ## Side note
 
-I'm building this game for terra by Hack Club. This was my work of the first weeks, updates will come in the next weeks of the terra event.
+I'm building this game for terra by Hack Club. This was my work of the first three weeks, updates will come in the next weeks of the terra event.
 
 ## Credits
 
