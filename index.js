@@ -163,7 +163,7 @@ function get_mouse_movement(event) {
 
 function handle_shot() {
     try {
-        canvas.requestPointerLock({unadjustedMovement: true})
+        canvas.requestPointerLock()
         
     } catch (error) {
       console.error("pointer lock error", error)

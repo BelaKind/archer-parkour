@@ -46,7 +46,6 @@ class Player {
                 this.velocity = 0;
                 this.position.y = colliding_tile.tile_y - this.height
                 this.isOnGround = true
-                console.log('ground')
             }else{
                 this.velocity = 0
                 this.position.y = colliding_tile.tile_y + first_level.height
