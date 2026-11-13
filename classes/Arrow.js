@@ -42,6 +42,7 @@ class Arrow {
         }else{
             c.rotate(angle)
         }
+        c.globalAlpha = 1
         c.drawImage(texture, -(this.width / 2), -(this.height / 2))
         c.restore(); 
     }
