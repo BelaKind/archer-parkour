@@ -71,6 +71,7 @@ function animate(current_time) {
         c.fillStyle = '#a4e4fc'
         c.fillRect(0, 0, canvas.width, canvas.height)
         load_tilemap()
+        player.update_hitbox()
         player.update_player(delta_time.delta_time)
         player.update_hitbox()
         player.draw_player(assets_loader.assets['player'])
@@ -136,7 +137,7 @@ function animate(current_time) {
         c.fillStyle = '#881400'
         c.fillText('Archer Parkour', canvas.width/2, (canvas.height/2)-120)
         c.fillText('START', canvas.width/2, (canvas.height/2)+20)
-        c.fillText('Use A/D or to move', canvas.width/2, (canvas.height/2)+100)
+        c.fillText('Use A/D to move', canvas.width/2, (canvas.height/2)+100)
         c.fillText('space to jump', canvas.width/2, (canvas.height/2)+150)
         c.fillText('Left-click to shoot', canvas.width/2, (canvas.height/2)+200)
     }
