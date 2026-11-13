@@ -65,18 +65,20 @@ function animate(current_time) {
     delta_time.last_time = current_time
     game.update_game_state()
     c.textAlign = 'left'
-    if(game.state == 'playing') {
+    if(true) {
         c.clearRect(0, 0, canvas.width, canvas.height)
         c.globalAlpha = 1
         c.fillStyle = '#a4e4fc'
         c.fillRect(0, 0, canvas.width, canvas.height)
         load_tilemap()
         player.update_player(delta_time.delta_time)
+        player.update_hitbox()
         player.draw_player(assets_loader.assets['player'])
         draw_aim_line()
         draw_arrows()
         c.font = '20px "PressStart2P-Regular"'
         c.fillStyle = 'red'
+        c.globalAlpha = 1
         c.fillText(`Targets remaining: ${count_targets()}`, 30, 30)
     }else if(game.state == 'dead') {
         c.clearRect(0, 0, canvas.width, canvas.height)
@@ -112,6 +114,7 @@ function animate(current_time) {
         }
     }else if(game.state == 'paused') {
         c.clearRect(0, 0, canvas.width, canvas.height)
+        c.globalAlpha = 1
         c.drawImage(assets_loader.assets['menu'], (canvas.width/2)-500, (canvas.height/2)-500, 1000, 1000)
         c.font = '30px PressStart2P-Regular'
         c.textAlign = 'center'
@@ -170,7 +173,7 @@ function handle_shot() {
     }
     if(game.isMouseLocked) {
         if(player.shoot_timer.calculate_time(500)) {
-            arrows.push(new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2)))
+            arrows.push(new Arrow(player.hitbox.position.x + (player.hitbox.width / 2), player.position.y + (player.height / 2)))
             current_arrow = arrows[arrows.length -1]
             let vector = calculate_flight_vector(current_arrow)
             current_arrow.shot.x_steps = vector.x_steps
@@ -293,7 +296,7 @@ function check_circle_collision(circle_x, circle_y, radius, rect_x, rect_y, rect
     let closest_X = Math.max(rect_x, Math.min(circle_x, rect_x + rect_w))
     let closest_Y = Math.max(rect_y, Math.min(circle_y, rect_y + rect_h))
 
-    // Compare its distance to the radius
+    // Compare it's distance to the radius
     let delta_x = circle_x - closest_X
     let delta_y = circle_y - closest_Y
     return delta_x * delta_x + delta_y * delta_y <= radius * radius
@@ -302,7 +305,7 @@ function check_circle_collision(circle_x, circle_y, radius, rect_x, rect_y, rect
 
 function draw_aim_line() {
     path = []
-    aim_line = new Arrow(player.position.x + (player.width / 2), player.position.y + (player.height / 2))
+    aim_line = new Arrow(player.hitbox.position.x + (player.hitbox.width / 2), player.position.y + (player.height / 2))
     aim_line.isAimline = true
     let vector = calculate_flight_vector(aim_line)
     aim_line.shot.x_steps = vector.x_steps
