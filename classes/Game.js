@@ -17,7 +17,7 @@ class Game {
 
     update_game_state() {
         
-        if(player.position.y > canvas.height) {
+        if(player.hitbox.position.y > canvas.height) {
             this.state = 'dead'
         }else if(count_targets() == 0) {
             this.state = 'won'

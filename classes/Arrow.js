@@ -42,14 +42,15 @@ class Arrow {
         }else{
             c.rotate(angle)
         }
+        c.globalAlpha = 1
         c.drawImage(texture, -(this.width / 2), -(this.height / 2))
         c.restore(); 
     }
     update_arrow(deltaTime, current_arrow) {
-        let colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier].texture == 'target')
+        let colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].texture == 'target')
 
         if(!colliding_tile) {
-            colliding_tile = cycle_tiles(this, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+            colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].solid)
         }
         if(!this.isStuck) {
             this.position.x += (this.shot.x_steps * this.shot.speed_multiplier) * deltaTime
