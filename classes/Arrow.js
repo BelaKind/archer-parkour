@@ -28,8 +28,8 @@ class Arrow {
 
         this.arrowhead = {
             radius: 2.5,
-            x: 0,
-            y: 0,
+            x: player_x - this.width / 2,
+            y: player_y - this.height / 2,
         }
 
     }
