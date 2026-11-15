@@ -7,6 +7,7 @@ const tile_types = {
     '#7c7c7c': {texture: 'stair', player_solid: true, arrow_solid: true, identifier: 4},
     '#004058': {texture: 'stair_left', player_solid: true, arrow_solid: true, identifier: 5},
     '#f83800': {texture: 'target', player_solid: false, arrow_solid: true, identifier: 6},
+    '#4428bc': {texture: 'portal', player_solid: false, arrow_solid: true, identifier: 7},
 }
 
 // Create a list to search by the identifier which is used in the map array
