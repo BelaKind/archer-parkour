@@ -20,7 +20,7 @@ class Player {
         this.height = 64
         this.weight = 1500  
         this.velocity = 0
-        this.speed = 400
+        this.speed = 300
         this.jump_height = 600
         this.facing_direction = 1
         this.shoot_timer = new Timer()
@@ -82,7 +82,11 @@ class Player {
             colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].player_solid)
             this.facing_direction = -1
             let hitbox_x_offset = this.hitbox.position.x - this.position.x
-            if(colliding_tile) {
+            if(colliding_tile && (tile_list[game.current_map[colliding_tile.index]].texture == 'stair' || tile_list[game.current_map[colliding_tile.index]].texture == 'stair_left')) {
+                this.position.y = colliding_tile.tile_y - this.height
+                console.log('stair')
+                this.update_hitbox()
+            }else if(colliding_tile){
                 this.position.x = (colliding_tile.tile_x + game.current_level.width) - hitbox_x_offset
                 this.update_hitbox()
             }
@@ -99,10 +103,13 @@ class Player {
             colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].player_solid)
             this.facing_direction = 1
             let hitbox_x_offset = this.hitbox.position.x - this.position.x
-            if(colliding_tile) {
-                this.position.x = (colliding_tile.tile_x - this.hitbox.width) - hitbox_x_offset
+            if(colliding_tile && (tile_list[game.current_map[colliding_tile.index]].texture == 'stair' || tile_list[game.current_map[colliding_tile.index]].texture == 'stair_left')) {
+                this.position.y = colliding_tile.tile_y - this.height
+                console.log('stair')
                 this.update_hitbox()
-
+            }else if(colliding_tile){
+                this.position.x = (colliding_tile.tile_x - game.current_level.width) + hitbox_x_offset
+                this.update_hitbox()
             }
             if(this.hitbox.position.x + this.hitbox.width > canvas.width) {
                 this.position.x = (canvas.width - this.hitbox.width) - hitbox_x_offset
