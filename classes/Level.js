@@ -44,6 +44,5 @@ class Level {
             this.map[i/4] = tile_types[this.rgb_to_hex(r,g,b)].identifier
             i += 3
         }
-        console.log(this.map)
     }
 }
