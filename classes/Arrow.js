@@ -28,8 +28,8 @@ class Arrow {
 
         this.arrowhead = {
             radius: 2.5,
-            x: 0,
-            y: 0,
+            x: player_x - this.width / 2,
+            y: player_y - this.height / 2,
         }
 
     }
@@ -50,7 +50,7 @@ class Arrow {
         let colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].texture == 'target')
 
         if(!colliding_tile) {
-            colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].solid)
+            colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].arrow_solid)
         }
         if(!this.isStuck) {
             this.position.x += (this.shot.x_steps * this.shot.speed_multiplier) * deltaTime

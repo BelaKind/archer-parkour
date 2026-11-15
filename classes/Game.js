@@ -1,6 +1,6 @@
 class Game {
     constructor() {
-        this.level_number = 1
+        this.level_number = 2
         this.state = 'startMenu'
         this.isMouseLocked = false
         this.current_level = new Level()

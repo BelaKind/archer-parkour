@@ -6,6 +6,11 @@ class AssetsLoader {
             {name: 'player'},
             {name: 'arrow'},
             {name: 'menu'},
+            {name: 'wall'},
+            {name: 'stair'},
+            {name: 'stair_left'},
+            {name: 'building_sandstone'},
+            {name: 'portal'},
         ]
 
         this.fonts = [
