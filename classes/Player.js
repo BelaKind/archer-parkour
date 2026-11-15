@@ -57,7 +57,7 @@ class Player {
         this.position.y += this.velocity * deltaTime;
         this.isOnGround = false
         this.update_hitbox()
-        let colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+        let colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].player_solid)
         this.update_hitbox()
         if(colliding_tile) {
             if(this.sides.bottom > colliding_tile.tile_y && this.velocity > 0) {
@@ -79,7 +79,7 @@ class Player {
         if (keys.isLeft) {
             this.position.x -= this.speed * deltaTime
             this.update_hitbox()
-            colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+            colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].player_solid)
             this.facing_direction = -1
             let hitbox_x_offset = this.hitbox.position.x - this.position.x
             if(colliding_tile) {
@@ -96,7 +96,7 @@ class Player {
             this.update_hitbox()
             this.position.x += this.speed * deltaTime
             this.update_hitbox()
-            colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].solid)
+            colliding_tile = cycle_tiles(this.hitbox, 'rectangle').find((tile) => tile_list[tile.identifier].player_solid)
             this.facing_direction = 1
             let hitbox_x_offset = this.hitbox.position.x - this.position.x
             if(colliding_tile) {

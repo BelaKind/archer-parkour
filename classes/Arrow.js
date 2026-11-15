@@ -50,7 +50,7 @@ class Arrow {
         let colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].texture == 'target')
 
         if(!colliding_tile) {
-            colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].solid)
+            colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].player_solid)
         }
         if(!this.isStuck) {
             this.position.x += (this.shot.x_steps * this.shot.speed_multiplier) * deltaTime
