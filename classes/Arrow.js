@@ -4,7 +4,7 @@ class Arrow {
         this.height = 5
 
         this.position = {
-            x: player_x - this.width / 2,
+            x: player_x,
             y: player_y - this.height / 2,
         }
 
@@ -49,9 +49,17 @@ class Arrow {
     update_arrow(deltaTime, current_arrow) {
         let colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].texture == 'target')
 
-        if(!colliding_tile) {
-            colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].arrow_solid)
+        if(this.isAimline) {
+            if(!colliding_tile) {
+                colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].player_solid)
+            }
+        }else{
+            if(!colliding_tile) {
+                colliding_tile = cycle_tiles(this, 'circle').find((tile) => tile_list[tile.identifier].arrow_solid)
+            }
         }
+        
+        
         if(!this.isStuck) {
             this.position.x += (this.shot.x_steps * this.shot.speed_multiplier) * deltaTime
             this.position.y += (this.shot.y_steps * this.shot.speed_multiplier) * deltaTime

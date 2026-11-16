@@ -1,6 +1,6 @@
 class Game {
     constructor() {
-        this.level_number = 2
+        this.level_number = 1
         this.state = 'startMenu'
         this.isMouseLocked = false
         this.current_level = new Level()
@@ -17,9 +17,9 @@ class Game {
 
     update_game_state() {
         
-        if(player.hitbox.position.y > canvas.height) {
+        if(player.hitbox.position.y > canvas.height || player.arrows_remaining < 0) {
             this.state = 'dead'
-        }else if(count_targets() == 0) {
+        }else if(count_targets() == 0 && cycle_tiles(player, 'rectangle').find((tile) => tile_list[tile.identifier].texture == 'portal')) {
             this.state = 'won'
         }else if(keys.isEsc){
             this.state = 'paused'
