@@ -68,7 +68,12 @@ function animate(current_time) {
     if(game.state == 'playing') {
         playing()
     }else if(game.state == 'dead') {
-        dead()
+        if(player.arrows_remaining < 0) {
+            dead('You ran out of arrows')
+        }else{
+            dead('You fell to your death')
+        }
+        
     }else if(game.state == 'won') {
         won()
     }else if(game.state == 'paused') {
@@ -109,6 +114,7 @@ function handle_shot() {
     }
     if(game.isMouseLocked) {
         if(player.shoot_timer.calculate_time(500)) {
+            player.arrows_remaining --
             arrows.push(new Arrow(player.hitbox.position.x + (player.hitbox.width / 2), player.position.y + (player.height / 2)))
             current_arrow = arrows[arrows.length -1]
             let vector = calculate_flight_vector(current_arrow)
@@ -291,8 +297,13 @@ function reset_game() {
     player = new Player()
     arrows = []
     game.state = 'playing'
-    game.current_map = [...game.current_level.map]
-    // keep the mouse locked after restarting
-    game.isMouseLocked = true
+    game.load_level()
+    .then(() => {
+        game.current_map = [...game.current_level.map]
+    })
+    .catch((error) => {
+        console.log(`error while restarting the game: ${error}`)
+    })
+
 }
 
