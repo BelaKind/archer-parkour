@@ -7,7 +7,7 @@
 
 | gameplay |  player design |
 | :---: | :---: | 
-| ![gameplay](Screenshots/gameplay.gif) | ![portal design](Screenshots/portal_design.png) |
+| ![gameplay](Screenshots/new_gameplay.gif) | ![portal design](Screenshots/portal_design.png) |
 | **start screen** | **death screen** |
 | ![start screen](Screenshots/start_screen.png) | ![death message](Screenshots/death_screen.png) |
 
