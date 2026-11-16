@@ -28,6 +28,7 @@ class Player {
         this.isOnGround = false
         this.aim_sensitivity = 100
         this.aim_y = 0
+        this.arrows_remaining = 20
     }
     get sides() {
         return {
@@ -84,7 +85,6 @@ class Player {
             let hitbox_x_offset = this.hitbox.position.x - this.position.x
             if(colliding_tile && (tile_list[game.current_map[colliding_tile.index]].texture == 'stair' || tile_list[game.current_map[colliding_tile.index]].texture == 'stair_left')) {
                 this.position.y = colliding_tile.tile_y - this.height
-                console.log('stair')
                 this.update_hitbox()
             }else if(colliding_tile){
                 this.position.x = (colliding_tile.tile_x + game.current_level.width) - hitbox_x_offset
@@ -105,7 +105,6 @@ class Player {
             let hitbox_x_offset = this.hitbox.position.x - this.position.x
             if(colliding_tile && (tile_list[game.current_map[colliding_tile.index]].texture == 'stair' || tile_list[game.current_map[colliding_tile.index]].texture == 'stair_left')) {
                 this.position.y = colliding_tile.tile_y - this.height
-                console.log('stair')
                 this.update_hitbox()
             }else if(colliding_tile){
                 this.position.x = (colliding_tile.tile_x - game.current_level.width) + hitbox_x_offset

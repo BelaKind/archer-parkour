@@ -7,7 +7,7 @@
 
 | gameplay |  player design |
 | :---: | :---: | 
-| ![gameplay](Screenshots/gameplay.gif) | ![player design](Screenshots/player.png) |
+| ![gameplay](Screenshots/gameplay.gif) | ![portal design](Screenshots/portal_design.png) |
 | **start screen** | **death screen** |
 | ![start screen](Screenshots/start_screen.png) | ![death message](Screenshots/death_screen.png) |
 
@@ -35,27 +35,25 @@ This game is completly built with vanilla browser technologies, mostly with java
 
 ## New features & changes
 
-- better physics for the arrows (rotating in flight direction)
-- textures for solid tiles arrows, the player and targets. Also a texture for start menu, pause screen, death screen and win screen
-- start screen with brief controls tutorial
-- pause screen (gaame pauses automatically when you dont focus the window anymore or press esc)
 - new level design
-- improved level loading (from a png file)
+- new 2nd level
+- the player has the ability to auto jump when he is touching a stair
+- new textures for walls, buildings, stairs, portal
+- arrows are limited (makes the game a bit harder)
+- the hitbox of the player maches the image you see 
+- removed typo on the start screen
 
 ## Coming soon
 
 - more and better animations for all objects
 - enemies
-- multiple levels
 
 ## Known bugs
 
-- The hitbox of the player is not matching the image you see
-- Targets are solid tiles the player can stand on
-
+- At some angles the arrows don't get stuck correctly in the tiles
 ## Side note
 
-I'm building this game for terra by Hack Club. This was my work of the first three weeks, updates will come in the next weeks of the terra event.
+I'm building this game for terra by Hack Club. This was my work of the first four weeks, updates will come in the next weeks of the terra event.
 
 ## Credits
 
